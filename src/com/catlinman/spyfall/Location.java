@@ -1,12 +1,18 @@
-// TODO: Location class. Handles role assignment and player tracking.
-
 package com.catlinman.spyfall;
 
-class Location {
-	String data;
+import java.util.ArrayList;
+import java.io.FileReader;
+import javax.json.Json;
+import javax.json.JsonReader;
+import javax.json.JsonStructure;
 
+class Location {
+	private ArrayList<String> data;
 	String name;
-	String[] roles;
+
+	private void loadData() {
+		// this.data = new CSVReader("data.csv");
+	}
 
 	Location() {
 		// Pick a random location from the data set.

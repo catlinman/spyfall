@@ -1,5 +1,6 @@
 package com.catlinman.spyfall;
 
+import java.util.ArrayList;
 import java.lang.Thread;
 
 public class Game {
@@ -9,7 +10,7 @@ public class Game {
 	private Boolean ingame = false;
 
 	private Location location;
-	private Player[] players;
+	private ArrayList<Player> players;
 
 	private Thread stopwatchThread;
 	private Boolean stopwatchEnabled = false;
@@ -18,7 +19,7 @@ public class Game {
 
 	public Game(int players, long time) {
 		// This should be handled with a return event later on.
-		if (players <= maxPlayers)
+		if (players.size() <= maxPlayers)
 			this.numPlayers = players;
 		else
 			this.numPlayers = maxPlayers;

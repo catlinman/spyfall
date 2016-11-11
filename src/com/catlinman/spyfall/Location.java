@@ -1,25 +1,21 @@
 package com.catlinman.spyfall;
 
 import java.util.ArrayList;
-import java.io.FileReader;
-import javax.json.Json;
-import javax.json.JsonReader;
-import javax.json.JsonStructure;
+
+// TODO: Write JSON reader.
 
 class Location {
-	private ArrayList<String> data;
+	private static ArrayList<String> data;
 	String name;
 
-	private void loadData() {
-		// this.data = new CSVReader("data.csv");
-	}
-
-	Location() {
-		// Pick a random location from the data set.
-	}
+	Location() {}
 
 	Location(String name) {
 		// Pick the location by name. If it doesn't exist throw an error.
+	}
+
+	private static void loadData(String lang) {
+		// TODO: Load location data CSV file here based on input language.
 	}
 
 	// Sets a players role and removes it from the possible list of roles.

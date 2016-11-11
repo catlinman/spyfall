@@ -18,7 +18,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class Program extends Application {
-	public Game spyfall;
+	// Constant application supported languages.
+	private static final String[] LANGUAGES = {
+		"en",
+		"de"
+	};
+
+	public static Game spyfall; // The main game object.
 
 	@Override
 	public void start(Stage primaryStage) {

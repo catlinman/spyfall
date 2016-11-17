@@ -8,25 +8,31 @@ public class Game {
 	private static final int MAXPLAYERS   = 8;   // Constant maximum players.
 	private static final long DEFAULTTIME = 480; // Constant default time.
 
-	private Boolean ingame = false;    // Stores the current game state.
-	private int numPlayers = 0;        // Stores the current amount of players.
-	private Location location;         // Stores the current game location.
-	private ArrayList<Player> players; // Stores the current player objects.
+	private Boolean ingame = false; // Stores the current game state.
+	private int numPlayers = 0;     // Stores the current amount of players.
+	private Location location;      // Stores the current game location.
+	private Player[] players;       // Stores the current player objects.
 
-	private Thread stopwatchThread;           // Dedicated thread to handle the stopwatch.
-	private Boolean stopwatchEnabled = false; // If the stopwatch thread should be launched.
-	private Boolean stopwatchActive  = false; // If the stopwatch thread should run.
-	private long stopwatchTime       = DEFAULTTIME;
+	private Thread stopwatchThread;                 // Dedicated thread to handle the stopwatch.
+	private Boolean stopwatchEnabled = false;       // If the stopwatch thread should be launched.
+	private Boolean stopwatchActive  = false;       // If the stopwatch thread should run.
+	private long stopwatchTime       = DEFAULTTIME; // Set a stopwatch time by default.
 
 	public Game(int players, long time) {
 		// This should be handled with a return event later on.
-		if (this.players.size() <= MAXPLAYERS)
+		if (players <= MAXPLAYERS)
 			this.numPlayers = players;
 		else
 			this.numPlayers = MAXPLAYERS;
 
+		this.players = new Player[players]; // Create the player array.
+
+		// IDEA: For loop adding new instantiated players.
+
 		this.stopwatchTime    = time;
-		this.stopwatchEnabled = (this.stopwatchTime > 0) ? true : false;
+		this.stopwatchEnabled = this.stopwatchTime > 0 ? true : false;
+
+		this.location = new Location();
 	}
 
 	/*
@@ -45,12 +51,15 @@ public class Game {
 						try {
 							if (stopwatchActive) {
 								stopwatchTime--;
-								System.out.println(stopwatchTime);
+								if (Program.DEBUG) System.out.print("Stopwatch seconds left: " + stopwatchTime + "\r");
 							}
+
 							Thread.sleep(1000);
+
 						} catch (InterruptedException e) {}
 					}
 				}
+
 			}.start();
 		}
 	}
@@ -103,4 +112,5 @@ public class Game {
 	public long getTimeLeft() {
 		return this.stopwatchTime;
 	}
+
 }

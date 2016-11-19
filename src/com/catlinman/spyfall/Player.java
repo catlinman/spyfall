@@ -2,14 +2,50 @@ package com.catlinman.spyfall;
 
 // Proxy data class for maintaining player information.
 class Player {
-	String name;
-	Location location;
-	String role;
+	private int id;
+	private String name;
+	private Location location;
+	private String role;
 
-	Player(String n, Location l, String r) {
-		this.name     = n;
+	Player(int id) {
+		this.id = id;
+	}
+
+	Player(int id, String n) {
+		this.id   = id;
+		this.name = n;
+	}
+
+	int getID() {
+		return this.id;
+	}
+
+	void setID(int id) {
+		this.id = id;
+	}
+
+	Location getLocation() {
+		return this.location;
+	}
+
+	void setLocation(Location l) {
 		this.location = l;
-		this.role     = r;
+	}
+
+	String getName() {
+		return this.name;
+	}
+
+	void setName(String n) {
+		this.name = n;
+	}
+
+	String getRole() {
+		return this.role;
+	}
+
+	void setRole(String r) {
+		this.role = r;
 	}
 
 }

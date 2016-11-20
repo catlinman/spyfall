@@ -16,6 +16,9 @@ class Location {
 	private static final String DATAFILE  = "location.csv";
 	private static String[][] data;
 
+	// TODO: Write data into this variable. Requires getter as well.
+	private static String[] locations; // Contains all possible location names.
+
 	private Game game; // Contains the current game instance and information.
 
 	private int id;
@@ -37,19 +40,19 @@ class Location {
 
 	// Sets a player's role in respect to other already assigned roles.
 	void assignRole(Player p) {
-		Player[] playerArray = this.game.getPlayers(); // Get the main game player array.
-
 		// If no Spy picking is required we continue with the normal random selection method.
 		Utilities.shuffle(this.roles); // Randomly sort the array contents.
 		for (String r : this.roles) {
 			boolean found = false;
 			// Iterate over the players and check if their role matches up and is already taken.
-			for (int i = 0; i < this.game.getNumPlayers(); i++)
+			for (Player p2 : this.game.getPlayers()) {
 				// FIXME: This currently throw a null pointer exception.
-				if (playerArray[i].getRole() != null) {
-					found = true;
-					break; // Skip the iteration if the role was found.
-				}
+				if (p2 != null)
+					if (p2.getRole() == r) {
+						found = true;
+						break; // Skip the iteration if the role was found.
+					}
+			}
 
 			// If the role is available we assign it to the given player.
 			if (!found) {

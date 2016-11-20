@@ -6,6 +6,8 @@ class Player {
 	private String name;
 	private Location location;
 	private String role;
+	private Player suspect;
+	private int votes = 0;
 
 	Player(int id) {
 		this.id = id;
@@ -46,6 +48,41 @@ class Player {
 
 	void setRole(String r) {
 		this.role = r;
+	}
+
+	void setSuspect(Player p) {
+		this.suspect = p;
+	}
+
+	Player getSuspect() {
+		return this.suspect;
+	}
+
+	void addVote(Player p) {
+		p.setSuspect(this);
+		this.votes += 1;
+	}
+
+	void removeVote(Player p) {
+		p.setSuspect(null);
+		this.votes -= 1;
+	}
+
+	int getVotes() {
+		return this.votes;
+	}
+
+	void setVotes(int v) {
+		this.votes = v;
+	}
+
+	void doVote(Player p) {
+		if (p != this) {
+			if (this.suspect != null) this.suspect.removeVote(this);
+
+			this.suspect = p;
+			this.suspect.addVote(this);
+		}
 	}
 
 }

@@ -9,11 +9,19 @@ public class Game {
 	private static final int MAXPLAYERS   = 8;   // Constant maximum players.
 	private static final long DEFAULTTIME = 480; // Constant default time.
 
-	private Boolean ingame = false; // Stores the current game state.
-	private int numPlayers = 0;     // Stores the current amount of players.
-	private Location location;      // Stores the current game location.
-	private Player[] players;       // Stores the current player objects.
-	private int spyID = 0;          // The player ID that has been assigned as spy.
+	// Gamestates:
+	//      0 = Waiting
+	//      1 = Prepared
+	//      2 = Ingame
+	//      3 = Completed
+	//      4 = Resolution
+
+	private int gamestate  = 0;  // Stores the current game state.
+	private int numPlayers = 0;  // Stores the current amount of players.
+	private int spyID      = -1; // The player ID that has been assigned as spy.
+
+	private Location location; // Stores the current game location.
+	private Player[] players;  // Stores the current player objects.
 
 	private Thread stopwatchThread;                 // Dedicated thread to handle the stopwatch.
 	private Boolean stopwatchEnabled = false;       // If the stopwatch thread should be launched.
@@ -27,13 +35,14 @@ public class Game {
 		else
 			this.numPlayers = MAXPLAYERS;
 
-		this.players = new Player[pcount]; // Create the player array.
+		// Instiate arrays with the right length.
+		this.players = new Player[this.numPlayers];
 
 		// Setup stopwatch information.
 		this.stopwatchTime    = time;
 		this.stopwatchEnabled = this.stopwatchTime > 0 ? true : false;
 
-		// Get and instantiate a new location from the location data.
+		// Get and instantiate a new location from the location data set.
 		this.location = new Location(this);
 
 		// Print game location information.
@@ -42,39 +51,28 @@ public class Game {
 			System.out.println("Roles: " + String.join(", ", this.location.getRoles()));
 		}
 
-		// Start creating players and assigning roles.
-		for (int i = 0; i < pcount; i++) {
-			this.players[i] = new Player(i, "Player " + (i + 1));
+		this.setRoles(); // Assign roles to players.
 
-			if (this.getSpyPlayer() == null) {
-				if (ThreadLocalRandom.current().nextInt(1, this.numPlayers + 1) == 1)
-					this.setSpyPlayer(this.players[i]);  // Random chance to be picked as the spy.
-
-			} else {
-				// If not picked as the spy assign a role. Returns null if all roles are taken.
-				this.location.assignRole(this.players[i]);
-
-				if (Program.DEBUG) {
-					String role = this.players[i].getRole();
-
-					if (role != null) System.out.print(
-							"Player " + this.players[i].getID() + " has been assigned the role of "
-							+ this.players[i].getRole());
-				}
-			}
-
-			// If we're at the latest player we check if a spy has been picked. If not, assign this player as the spy.
-			if (i == pcount)
-				if (this.players[this.numPlayers - 1].getRole() == null && this.getSpyPlayer() == null)
-					this.setSpyPlayer(this.players[this.numPlayers - 1]);
-		}
+		this.gamestate = 1; // Set the preparing gamestate.
 	}
+
+	/*   ,ad8888ba,                                                  88                            88
+	 *  d8"'    `"8b                                                 88                            ""
+	 * d8'                                                           88
+	 * 88             ,adPPYYba,  88,dPYba,,adPYba,    ,adPPYba,     88   ,adPPYba,    ,adPPYb,d8  88   ,adPPYba,
+	 * 88      88888  ""     `Y8  88P'   "88"    "8a  a8P_____88     88  a8"     "8a  a8"    `Y88  88  a8"     ""
+	 * Y8,        88  ,adPPPPP88  88      88      88  8PP"""""""     88  8b       d8  8b       88  88  8b
+	 *  Y8a.    .a88  88,    ,88  88      88      88  "8b,   ,aa     88  "8a,   ,a8"  "8a,   ,d88  88  "8a,   ,aa
+	 *   `"Y88888P"   `"8bbdP"Y8  88      88      88   `"Ybbd8"'     88   `"YbbdP"'    `"YbbdP"Y8  88   `"Ybbd8"'
+	 *                                                                                 aa,    ,88
+	 *                                                                                  "Y8bbdP"
+	 */
 
 	/*
 	 * Prepares game logic and starts the main timer if enabled.
 	 */
 	public void start() {
-		this.ingame = true;
+		this.gamestate = 2;
 
 		// Stopwatch handling.
 		if (this.stopwatchEnabled) {
@@ -82,12 +80,14 @@ public class Game {
 
 			new Thread() {
 				public void run() {
-					while (ingame) {
+					while (gamestate == 2) {
 						try {
 							if (stopwatchActive) {
 								stopwatchTime--;
 								if (Program.DEBUG) System.out.print("Stopwatch seconds left: " + stopwatchTime + "\r");
 							}
+
+							if (stopwatchTime <= 0) gameover();
 
 							Thread.sleep(1000);
 
@@ -100,12 +100,13 @@ public class Game {
 	}
 
 	/*
-	 * Resets all game variables to their default state.
+	 * Resets all game variables to their default states.
 	 */
 	public void reset() {
+		this.gamestate        = 0;
 		this.location         = null;
 		this.players          = null;
-		this.ingame           = false;
+		this.spyID            = -1;
 		this.stopwatchEnabled = false;
 		this.stopwatchActive  = false;
 		this.stopwatchTime    = 0;
@@ -115,22 +116,94 @@ public class Game {
 	 * Pauses the game and it's handling as well as the stopwatch.
 	 */
 	public void pause() {
-		this.stopwatchActive = false;
+		if (gamestate == 2) this.stopwatchActive = false;
 	}
 
 	/**
 	 * Resumes the game after being paused.
 	 */
 	public void resume() {
-		if (this.stopwatchEnabled) this.stopwatchActive = true;
+		if (gamestate == 2) if (this.stopwatchEnabled) this.stopwatchActive = true;
 	}
 
 	/**
-	 * Called by the stopwatch or when a final vote has been raised.
+	 * Called by the stopwatch or when a final vote has been raised. Does not reveal information.
 	 */
 	public void gameover() {
+		this.gamestate       = 3; // Set the timeout gamestate.
 		this.stopwatchActive = false;
+
+		this.reset(); // HACK: THis should be removed later on.
 	}
+
+	// TODO: Evaluate the game result and state including guesses and votes.
+	public void conclude() {
+		this.gamestate = 4; // Set the conclusion gamestate.
+	}
+
+	/**
+	 * Casts a vote from a given player for a player. Voter and suspect must be different players.
+	 */
+	public void vote(int voterid, int suspectid) {
+		if (voterid < 0 || voterid > this.numPlayers - 1 || suspectid < 0 || suspectid > this.numPlayers - 1) {
+			if (Program.DEBUG) System.out.println("Invalid player id supplied during vote.");
+			return;
+		}
+
+		if (voterid != suspectid) {
+			this.players[voterid].doVote(this.players[suspectid]);
+
+			if (Program.DEBUG) System.out.println(
+					"Player " + (voterid + 1) + " voted for player " + (suspectid + 1)
+					+ ". Player " + (suspectid + 1) + " now has " + this.players[suspectid].getVotes() + " votes.");
+		}
+	}
+
+	/**
+	 * Evaluates and counts votes to return the highest voted player.
+	 * @return The highest voted player. If there is a tie it returns null.
+	 */
+	public Player voteResult() {
+		// Comparision values. These should be lower than base values.
+		int v1  = -1;
+		int id1 = -1;
+
+		// Lower than the other comparision values to have them evaluated and possibly replaced.
+		int v2  = -2;
+		int id2 = -2;
+
+		// Iterate over values and compare them. Get the two highest results and store them.
+		for (int i = 0; i < this.numPlayers; i++)
+			if (this.players[i].getVotes() >= v1) {
+				v2 = v1;
+
+				id2 = id1;
+
+				v1  = this.players[i].getVotes();
+				id1 = i;
+			}
+
+		if (v1 == v2)
+			return null;  // If tied return null.
+
+		else
+			return this.players[id1];  // Otherwise return the player by their ID.
+	}
+
+	// Returns true if the location guess matches up.
+	public boolean guessResult(String l) {
+		return l.trim().toLowerCase() == this.location.getName().trim().toLowerCase() ? true : false;
+	}
+
+	/*  ,ad8888ba,                              ,adba,         ad88888ba
+	 *  d8"'    `"8b                ,d           8I  I8        d8"     "8b                ,d
+	 * d8'                          88           "8bdP'        Y8,                        88
+	 * 88              ,adPPYba,  MM88MMM       ,d8"8b  88     `Y8aaaaa,     ,adPPYba,  MM88MMM
+	 * 88      88888  a8P_____88    88        .dP'   Yb,8I       `"""""8b,  a8P_____88    88
+	 * Y8,        88  8PP"""""""    88        8P      888'             `8b  8PP"""""""    88
+	 *  Y8a.    .a88  "8b,   ,aa    88,       8b,   ,dP8b      Y8a     a8P  "8b,   ,aa    88,
+	 *   `"Y88888P"    `"Ybbd8"'    "Y888     `Y8888P"  Yb      "Y88888P"    `"Ybbd8"'    "Y888
+	 */
 
 	/**
 	 * Returns the current game location.
@@ -164,16 +237,28 @@ public class Game {
 		return MAXPLAYERS;
 	}
 
+	/**
+	 * Sets a player to be the game's Spy.
+	 */
 	public void setSpyPlayer(Player p) {
-		if (Program.DEBUG)
-			System.out.print("Player " + p.getID() + " has been picked as the Spy!");
-
 		this.spyID = p.getID();
 		p.setRole("Spy");
+
+		if (Program.DEBUG)
+			System.out.println("Player " + (p.getID() + 1) + " has been picked as the Spy!");
 	}
 
+	/**
+	 * Returns the game's Spy player. If none is set, returns null.
+	 * @return Spy player object. If none exists, returns null.
+	 */
 	public Player getSpyPlayer() {
-		return this.players[this.spyID];
+		// Default spyID is -1 meaning we'll go out of the array.
+		try {
+			return this.players[this.spyID];
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -183,5 +268,44 @@ public class Game {
 	public long getTimeLeft() {
 		return this.stopwatchTime;
 	}
+
+	/*
+	 * Assigns roles to players.
+	 */
+	public void setRoles() {
+		// Make sure a location has been initialized.
+		if (this.location == null) {
+			if (Program.DEBUG) System.out.println("Can't prepare roles. Game location has not been initialized.");
+			return;
+		}
+
+		// Start creating players and assigning roles.
+		for (int i = 0; i < this.numPlayers; i++) {
+			this.players[i] = new Player(i, "Player " + (i + 1));
+
+			if (this.getSpyPlayer() == null && ThreadLocalRandom.current().nextInt(1, this.numPlayers + 1) == 1) {
+				this.setSpyPlayer(this.players[i]); // Random chance to be picked as the spy.
+
+			} else {
+				// If not picked as the spy assign a role. Returns null if all roles are taken.
+				this.location.assignRole(this.players[i]);
+
+				// Print role information.
+				if (Program.DEBUG) {
+					String role = this.players[i].getRole();
+
+					if (role != null)
+						System.out.println("Player " + (this.players[i].getID() + 1)
+						  + " has been assigned the role of " + this.players[i].getRole());
+				}
+			}
+
+			// If we're at the latest player we check if a spy has been picked. If not, assign this player as the spy.
+			if (i == this.numPlayers - 1 && this.getSpyPlayer() == null)
+				// Evaluate the player array to see if the spy role has been assigned. Else assign it to the last player.
+				if (this.players[this.numPlayers - 1].getRole() == null)
+					this.setSpyPlayer(this.players[this.numPlayers - 1]);
+		}
+	} /* setRoles */
 
 }

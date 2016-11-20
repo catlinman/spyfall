@@ -25,9 +25,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 // Main user interface application of this project.
-public class Program extends Application {
+public class Program {                           // extends Application {
+	public static final boolean NOGUI   = true;  // If the user interface should be hidden while testing.
 	public static final boolean DEBUG   = true;  // If game information should be printed to the console.
 	public static final boolean DEBUGUI = false; // If extra UI elements should be shown for debugging.
+
 
 	// Constant application supported languages array.
 	private static final String[] LANGUAGES = {
@@ -45,11 +47,9 @@ public class Program extends Application {
 
 	private ArrayList<TextField> playerFields;
 
-	@Override
+	// @Override
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Spyfall"); // Set the window title.
-
-		spyfall = new Game(4, 5 * 60); // IDEA: Create a new game. Should be done in a handler later.
 
 		// TODO: Create interface elements and fill in information.
 
@@ -86,11 +86,9 @@ public class Program extends Application {
 		root.getChildren().add(grid);
 		primaryStage.setScene(new Scene(root, 800, 600));
 		primaryStage.show();
-
-		spyfall.start(); // Start the game of Spyfall. Should be handled separately later
 	} /* start */
 
-	@Override
+	// @Override
 	public void stop() {
 		System.out.println("Game is closing..");
 		spyfall.reset();
@@ -135,7 +133,11 @@ public class Program extends Application {
 	// Main program entry point.
 	public static void main(String[] args) {
 		loadLocale(gamelang);
-		launch(args);
+
+		spyfall = new Game(9, 30); // IDEA: Should be handled and instantiate from the game.
+		spyfall.start();           // Start the game of Spyfall. Should be handled separately later
+
+		// if (!NOGUI) launch(args);
 	}
 
 }

@@ -7,9 +7,23 @@ Zirkus,Akrobat,Dompteur,Magier,Feuerschlucker,Clown,Jongleur,Besucher
 Firmenparty,Entertainer,Manager,Unerwünschter Gast,Besitzer,Sekretär,Lieferjunge,Buchhalter
 Kreuzritter Armee,Mönch,Gefangener Sarazene,Diener,Bischof,Knappe,Bogenschütze,Ritter
 Kasino,Barkeeper,Sicherheitschef,Türsteher,Manager,Gauner,Dealer,Spieler
-Schönheitsfarm,Stylist,Masseurin,Nagelpfleger,Visagist,Hautarzt,Kosmetiker,Kunde
+Schönheitssalon,Stylist,Masseurin,Nagelpfleger,Visagist,Hautarzt,Kosmetiker,Kunde
 Botschaft,Sicherheitsbediensteter,Sekretär,Botschafter,Tourist,Flüchtling,Diplomat,Regierungsvertreter
 Krankenhaus,Schwester,Doktor,Narkosenfacharzt,Praktikant,Therapeut,Chirurg,Patient
 Hotel,Pförtner,Sicherheitsbediensteter,Manager,Reinigungskraft,Barkeeper,Gepäckträger,Kunde
 Militärbasis,Deserteur,Oberst,Sanitäter,Scharfschütze,Offizier,Panzerpionier,Soldat
 Filmstudio,Stuntman,Tontechniker,Kameramann,Regisseur,Kostümbildner,Produzent,Schauspieler
+Ozeandampfer,Koch,Kapitän,Barkeeper,Musiker,Kellner,Mechaniker,Reicher Passagier
+Passagierzug,Mechaniker,Grenzkontrolle,Zugbegleiter,Koch,Zugführer,Heizer,Passagier
+Piratenschiff,Koch,Sklave,Kanonier,Gefesselter,Schiffsjunge,Mutiger Kapitän,Matrose
+Polarstation,Sanitäter,Expeditionsleiter,Biologe,Radiomann,Hydrologe,Meteorologe,Geologe
+Polizeistation,Kriminalbeamter,Richter,Journalist,Kriminalist,Archivar,Krimineller,Streifenpolizist
+Restaurant,Musiker,Türsteher,Gastgeberin,Chefkoch,Gastrokritiker,Kellner,Kunde
+Schule,Sportlehrer,Direktor,Sicherheitsbediensteter,Hausmeister,Cafe Bedienung,Wartungstechniker,Schüler
+Werkstatt,Manager,Reifenexperte,Motorradfahrer,Autobesitzer,Waschanlagenbetreiber,Elektriker,Automechaniker
+Raumstation,Techniker,Alien,Pilot,Befehlshaber,Wissenschaftler,Arzt,Tourist
+U-Boot,Koch,Kapitän,Sonartechniker,Elektroniker,Radiomann,Steuermann,Matrose
+Supermarkt,Kassierer,Fleischer,Hausmeister,Sicherheitsbediensteter,Probierhäppchenverteiler,Regalbefüller,Kunde
+Theater,Garderobenfrau,Souffleur,Kassierer,Regisseur,Schauspieler,Personal,Zuschauer
+Universität,Doktorand,Professor,Dekan,Psychologe,Wartungstechniker,Hausmeister,Student
+Trupp im 2. Weltkrieg,Widerstandskämpfer,Radiomann,Späher,Arzt,Koch,Gefangener,Soldat

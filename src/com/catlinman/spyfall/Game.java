@@ -9,13 +9,6 @@ public class Game {
 	private static final int MAXPLAYERS   = 8;   // Constant maximum players.
 	private static final long DEFAULTTIME = 480; // Constant default time.
 
-	// Gamestates:
-	//      0 = Waiting
-	//      1 = Prepared
-	//      2 = Ingame
-	//      3 = Completed
-	//      4 = Resolution
-
 	private int gamestate  = 0;  // Stores the current game state.
 	private int numPlayers = 0;  // Stores the current amount of players.
 	private int spyID      = -1; // The player ID that has been assigned as spy.
@@ -28,30 +21,10 @@ public class Game {
 	private Boolean stopwatchActive  = false;       // If the stopwatch thread should run.
 	private long stopwatchTime       = DEFAULTTIME; // Set a stopwatch time by default.
 
-	public Game(int pcount, long time) {
-		// This should be handled with a return event later on.
-		if (pcount <= MAXPLAYERS)
-			this.numPlayers = pcount;
-		else
-			this.numPlayers = MAXPLAYERS;
+	public Game() {
+		if (Program.DEBUG) System.out.println("Spyfall game intilizing.");
 
-		// Instiate arrays with the right length.
-		this.players = new Player[this.numPlayers];
-
-		// Setup stopwatch information.
-		this.stopwatchTime    = time;
-		this.stopwatchEnabled = this.stopwatchTime > 0 ? true : false;
-
-		// Get and instantiate a new location from the location data set.
-		this.location = new Location(this);
-
-		// Print game location information.
-		if (Program.DEBUG) {
-			System.out.println("Current game location: " + this.location.getID() + ". " + this.location.getName());
-			System.out.println("Roles: " + String.join(", ", this.location.getRoles()));
-		}
-
-		this.setRoles(); // Assign roles to players.
+		Location.loadData(Program.getLanguage());
 
 		this.gamestate = 1; // Set the preparing gamestate.
 	}
@@ -68,10 +41,45 @@ public class Game {
 	 *                                                                                  "Y8bbdP"
 	 */
 
+	public void prepare(int pcount, long time) {
+		if (Program.DEBUG) System.out.println("Spyfall game preparing.");
+
+		// This should be handled with a return event later on.
+		if (pcount <= MAXPLAYERS)
+			this.numPlayers = pcount;
+		else
+			this.numPlayers = MAXPLAYERS;
+
+		// Instantiate arrays with the right length.
+		this.players = new Player[this.numPlayers];
+
+		// Setup stopwatch information.
+		this.stopwatchTime    = time;
+		this.stopwatchEnabled = this.stopwatchTime > 0 ? true : false;
+
+		// Get and instantiate a new location from the location data set.
+		this.location = new Location(this);
+
+		// Print game location information.
+		if (Program.DEBUG) {
+			System.out.println("Current game location: " + this.location.getID() + ". " + this.location.getName());
+			System.out.println("Roles: " + String.join(", ", this.location.getRoles()));
+		}
+
+		this.setRoles(); // Assign roles to players.
+	}
+
 	/*
 	 * Prepares game logic and starts the main timer if enabled.
 	 */
 	public void start() {
+		if (this.gamestate != 1) {
+			if (Program.DEBUG) System.out.println("Game can not start without being prepared first.");
+			return;
+		}
+
+		if (Program.DEBUG) System.out.println("Spyfall game started.");
+
 		this.gamestate = 2;
 
 		// Stopwatch handling.
@@ -97,7 +105,7 @@ public class Game {
 
 			}.start();
 		}
-	}
+	} /* start */
 
 	/*
 	 * Resets all game variables to their default states.
@@ -110,20 +118,32 @@ public class Game {
 		this.stopwatchEnabled = false;
 		this.stopwatchActive  = false;
 		this.stopwatchTime    = 0;
+
+		if (Program.DEBUG) System.out.println("Spyfall game reset.");
 	}
 
 	/*
 	 * Pauses the game and it's handling as well as the stopwatch.
 	 */
 	public void pause() {
-		if (gamestate == 2) this.stopwatchActive = false;
+		if (this.gamestate == 2) {
+			this.stopwatchActive = false;
+
+			if (Program.DEBUG) System.out.println("Spyfall game paused.");
+
+		} else if (Program.DEBUG) { System.out.println("Game can not be paused since it's not in progress."); }
 	}
 
 	/**
 	 * Resumes the game after being paused.
 	 */
 	public void resume() {
-		if (gamestate == 2) if (this.stopwatchEnabled) this.stopwatchActive = true;
+		if (this.gamestate == 2) {
+			this.stopwatchActive = true;
+
+			if (Program.DEBUG) System.out.println("Spyfall game unpaused.");
+
+		} else if (Program.DEBUG) { System.out.println("Game can not be unpaused since it's not in progress."); }
 	}
 
 	/**
@@ -133,12 +153,14 @@ public class Game {
 		this.gamestate       = 3; // Set the timeout gamestate.
 		this.stopwatchActive = false;
 
-		this.reset(); // HACK: THis should be removed later on.
+		if (Program.DEBUG) System.out.println("Spyfall game finished and waiting for conclusion.");
 	}
 
 	// TODO: Evaluate the game result and state including guesses and votes.
 	public void conclude() {
 		this.gamestate = 4; // Set the conclusion gamestate.
+
+		if (Program.DEBUG) System.out.println("Spyfall game resolution and outcome.");
 	}
 
 	/**
@@ -256,6 +278,7 @@ public class Game {
 		// Default spyID is -1 meaning we'll go out of the array.
 		try {
 			return this.players[this.spyID];
+
 		} catch (IndexOutOfBoundsException e) {
 			return null;
 		}
@@ -267,6 +290,20 @@ public class Game {
 	 */
 	public long getTimeLeft() {
 		return this.stopwatchTime;
+	}
+
+	/**
+	 * Returns the current gamestate.
+	 * Gamestates:
+	 * 0 = Waiting
+	 * 1 = Prepared
+	 * 2 = Ingame
+	 * 3 = Completed
+	 * 4 = Resolution
+	 * @return Ganestate identifier.
+	 */
+	public int getGamestate() {
+		return this.gamestate;
 	}
 
 	/*

@@ -14,9 +14,8 @@ class Location {
 	// These variables are relevant to reading and storing the data file.
 	private static final String SEPARATOR = ",";
 	private static final String DATAFILE  = "location.csv";
-	private static String[][] data;
 
-	// TODO: Write data into this variable. Requires getter as well.
+	private static String[][] data;    // Contains data (location + roles).
 	private static String[] locations; // Contains all possible location names.
 
 	private Game game; // Contains the current game instance and information.
@@ -28,14 +27,15 @@ class Location {
 	Location(Game game) {
 		this.game = game; // Bind the game instance to the class member.
 
-		if (data == null) loadData(Program.gamelang);  // Load the data if it doesn't exist.
+		if (data == null) loadData(Program.getLanguage());  // Load the data if it doesn't exist.
 
 		// Locations are picked at random from the data set.
 		this.id = ThreadLocalRandom.current().nextInt(1, data.length + 1);
 
 		this.name  = data[this.id][0]; // First entry is always the location name.
 		this.roles = new String[7];
-		System.arraycopy(data[this.id], 1, this.roles, 0, 7);
+
+		System.arraycopy(data[this.id], 1, this.roles, 0, 7); // Copy the roles segment of the data array.
 	}
 
 	// Sets a player's role in respect to other already assigned roles.
@@ -46,7 +46,6 @@ class Location {
 			boolean found = false;
 			// Iterate over the players and check if their role matches up and is already taken.
 			for (Player p2 : this.game.getPlayers()) {
-				// FIXME: This currently throw a null pointer exception.
 				if (p2 != null)
 					if (p2.getRole() == r) {
 						found = true;
@@ -76,8 +75,7 @@ class Location {
 	}
 
 	// Loads localized input data into the static data table used for locations and roles.
-	// TODO: Possibly remove debugging lines or change the log system.
-	private static void loadData(String lang) {
+	static void loadData(String lang) {
 		// Fetch the resource location from the localized input file.
 		String datapath = Location.class.getClassLoader().getResource(lang + "_" + DATAFILE).getPath();
 
@@ -96,6 +94,9 @@ class Location {
 		// Create a new three dimensional string array without the header and the right data length.
 		data = new String[lines.length - 1][8];
 
+		// Create the location name array which.
+		locations = new String[lines.length - 1];
+
 		if (Program.DEBUG) System.out.println(lang.toUpperCase() + " DATA CSV is loading.");
 
 		// Iterate over each line. Split each at the separator. Clean up the string and insert it into the location data array.
@@ -103,9 +104,12 @@ class Location {
 			if (Program.DEBUG) System.out.println(lines[i + 1]);
 
 			try {
-				String[] fields = lines[i + 1].split(SEPARATOR);
+				String[] fields = lines[i + 1].split(SEPARATOR); // Split the line using our separator symbol.
 
+				// Create strings from the input data and make sure that they are formatted correctly.
 				for (int j = 0; j < fields.length; j++) data[i][j] = Utilities.capitalize(fields[j]);
+
+				locations[i] = data[i][0]; // Add this location name to the location array.
 
 			} catch (IndexOutOfBoundsException e) {
 				if (Program.DEBUG) System.out.println(lang.toUpperCase() + " DATA CSV: Line " + i
@@ -113,5 +117,13 @@ class Location {
 			}
 		}
 	} /* loadData */
+
+	static String[][] getData() {
+		return data;
+	}
+
+	static String[] getLocations() {
+		return locations;
+	}
 
 }

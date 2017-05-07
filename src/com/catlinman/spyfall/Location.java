@@ -12,8 +12,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 class Location {
 	// These variables are relevant to reading and storing the data file.
-	private static final String SEPARATOR = ",";
-	private static final String DATAFILE  = "location.csv";
+	private static final String SEPARATOR    = ",";
+	private static final String DATAFILENAME = "location.csv";
 
 	private static String[][] data;    // Contains data (location + roles).
 	private static String[] locations; // Contains all possible location names.
@@ -27,7 +27,10 @@ class Location {
 	Location(Game game) {
 		this.game = game; // Bind the game instance to the class member.
 
-		if (data == null) loadData(Program.getLanguage());  // Load the data if it doesn't exist.
+		if (data == null) {
+			if (Debug.LOCATION) System.out.println("No location data present. Aborting location instantiation.");
+			return;
+		}
 
 		// Locations are picked at random from the data set.
 		this.id = ThreadLocalRandom.current().nextInt(1, data.length + 1);
@@ -77,7 +80,7 @@ class Location {
 	// Loads localized input data into the static data table used for locations and roles.
 	static void loadData(String lang) {
 		// Fetch the resource location from the localized input file.
-		String datapath = Location.class.getClassLoader().getResource(lang + "_" + DATAFILE).getPath();
+		String datapath = Location.class.getClassLoader().getResource(lang + "_" + DATAFILENAME).getPath();
 
 		String content = ""; // Used as temporary storage for the input data.
 
@@ -97,11 +100,11 @@ class Location {
 		// Create the location name array which.
 		locations = new String[lines.length - 1];
 
-		if (Program.DEBUG) System.out.println(lang.toUpperCase() + " DATA CSV is loading.");
+		if (Debug.LOCATION) System.out.println(lang.toUpperCase() + " DATA CSV is loading.");
 
 		// Iterate over each line. Split each at the separator. Clean up the string and insert it into the location data array.
 		for (int i = 0; i < lines.length - 1; i++) {
-			if (Program.DEBUG) System.out.println(lines[i + 1]);
+			if (Debug.LOCATION) System.out.println(lines[i + 1]);
 
 			try {
 				String[] fields = lines[i + 1].split(SEPARATOR); // Split the line using our separator symbol.
@@ -112,7 +115,7 @@ class Location {
 				locations[i] = data[i][0]; // Add this location name to the location array.
 
 			} catch (IndexOutOfBoundsException e) {
-				if (Program.DEBUG) System.out.println(lang.toUpperCase() + " DATA CSV: Line " + i
+				if (Debug.LOCATION) System.out.println(lang.toUpperCase() + " DATA CSV: Line " + i
 					  + " does not contain the right amount of fields (expected 8 fields).");
 			}
 		}

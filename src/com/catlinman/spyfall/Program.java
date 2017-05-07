@@ -16,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.Separator;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -38,17 +39,14 @@ import java.util.HashMap;
 
 // Main user interface application of this project.
 public class Program extends Application {
-	public static final boolean DEBUG   = true;  // If game information should be printed to the console.
-	public static final boolean DEBUGUI = false; // If extra UI elements should be shown for debugging.
-
-	// Constant application supported languages array.
+	// Constant application supported languages array. Need to be changed in the combobox below as well.
 	private static final String[] LANGUAGES = {
 		"en",
 		"de"
 	};
 
-	private static final String SEPARATOR  = ",";
-	private static final String LOCALEFILE = "ui.csv"; // Localization filename. Lang prefix is prepended.
+	private static final String SEPARATOR      = ",";
+	private static final String LOCALEFILENAME = "ui.csv"; // Localization filename. Lang prefix is prepended.
 
 	private static String lang = "en";                   // Game language static string.
 	private static HashMap<String, String> localization; // String map containing localization data.
@@ -56,15 +54,69 @@ public class Program extends Application {
 	private static Game spyfall; // The main game object.
 
 	// UI elements that require extra mangement should be prepared here.
-	private ArrayList<TextField> playerFields = new ArrayList<TextField>();
+	private ArrayList<TextField> playerFields;
 
-	@Override
-	public void start(Stage stage) {
+	public void init(Stage stage) {
+		// Make sure that the supplied language is supported.
+		boolean langfound = false;
+
+		for (String s : LANGUAGES)
+			if (lang == s) {
+				langfound = true;
+				break;
+			}
+
+		if (langfound == true)
+			loadLocale(lang);
+		else
+			loadLocale("en");
+
+		// Create a new game of Spyfall. This also loads data for locations.
+		spyfall = new Game(lang);
+
 		stage.setTitle("Spyfall"); // Set the window title.
+		stage.setResizable(false); // Disable resizing.
 
 		// Create the main stack and main scene.
 		final StackPane mainStack = new StackPane();
-		final Scene mainScene     = new Scene(mainStack, 800, 600);
+		final Scene mainScene     = new Scene(mainStack, 800, 700);
+
+		// Create the game settings section heading.
+		final Text settingsText = new Text(25, 25, localization.get("application-settings-label"));
+
+		// Box for the application settings and buttons.
+		final HBox settingsBox = new HBox(10);
+		settingsBox.setPadding(new Insets(5, 10, 10, 10));
+		settingsBox.setAlignment(Pos.CENTER);
+
+		// Label for the language dropdown.
+		final Text languageText = new Text(25, 25, localization.get("general-language") + ":");
+
+		// Dropdown menu for available languages.
+		final ComboBox<String> languageDropdown = new ComboBox<String>();
+		for (String l : LANGUAGES) languageDropdown.getItems().addAll(localization.get("language-" + l));
+		languageDropdown.getSelectionModel().select(localization.get("language"));
+
+		// Create the settings buttons.
+		final Button saveButton = new Button(localization.get("application-settings-save"));
+		final Button helpButton = new Button(localization.get("application-settings-help"));
+
+		saveButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override public void handle(ActionEvent e) {
+			    lang = LANGUAGES[languageDropdown.getSelectionModel().getSelectedIndex()];
+
+			    if (Debug.UI) System.out.println("Switching language to '" + lang
+					+ "' and restarting the application.");
+
+			    restart(stage);
+			}
+		});
+
+		// Assign all buttons to the button divider box.
+		settingsBox.getChildren().add(languageText);
+		settingsBox.getChildren().add(languageDropdown);
+		settingsBox.getChildren().add(saveButton);
+		settingsBox.getChildren().add(helpButton);
 
 		// Create the vertical alignment box which all elements will be stored in.
 		final VBox verticalBox = new VBox(10);
@@ -72,44 +124,100 @@ public class Program extends Application {
 		verticalBox.setAlignment(Pos.TOP_CENTER);
 
 		// Create the section heading and player text field grid.
-		final Text playerText     = new Text(25, 25, "Player information");
+		final Text playerText = new Text(25, 25, localization.get("player-information-label"));
+
+		// Player number counter for the game. Disables and enables players as needed.
+		// Box for stopwatch setup and information.
+		final HBox countBox = new HBox(10);
+		countBox.setAlignment(Pos.CENTER);
+
+		// Create the text and input field.
+		final Text countText = new Text(localization.get("player-information-numlabel"));
+
+		// Dropdown menu for player slots.
+		final ComboBox<Integer> countDropdown = new ComboBox<Integer>();
+		countDropdown.getItems().addAll(3, 4, 5, 6, 7, 8);
+
+		// Select the second item (4).
+		countDropdown.getSelectionModel().select(1);
+
+		// Add our items to the player counter box.
+		countBox.getChildren().add(countText);
+		countBox.getChildren().add(countDropdown);
+
 		final GridPane playerGrid = new GridPane();
 
 		playerGrid.setPadding(new Insets(10, 10, 10, 10));
 		playerGrid.setVgap(10);
 		playerGrid.setHgap(10);
 
+		// Initialize the player fields array.
+		playerFields = new ArrayList<TextField>();
+
 		// Create the player fields.
 		for (int i = 0; i < 8; i++) {
 			TextField tf = new TextField();
 
-			tf.setPromptText("Player " + (i + 1)); // Set the correct player id.
+			// Create the player text string from localization.
+			String playertext = localization.get("general-player") + " " + (i + 1);
+
+			// Set the correct player id.
+			tf.setPromptText(playertext);
+
 			tf.setPrefColumnCount(14);
 
-			tf.addEventFilter(KeyEvent.KEY_TYPED, maxLength(20)); // Set the character limit listener (24).
+			if (i > 3) {
+				tf.setText("");
+				tf.setEditable(false);
+				tf.setDisable(true);
+			}
 
-			GridPane.setConstraints(tf, (int) Math.floor(i / 2), i % 2); // Create constraint based on player count.
+			tf.addEventFilter(KeyEvent.KEY_TYPED, maxLength(20)); // Set the character limit listener (20).
+
+			GridPane.setConstraints(tf, i % 4, i / 4); // Create constraint based on player count.
 
 			// Add the new text field to the grid and a list for easier management later on..
 			playerGrid.getChildren().add(tf);
 			playerFields.add(tf);
 		}
 
-		// Create the settings section heading.
-		final Text settingsText = new Text(25, 25, "Game information");
+		countDropdown.valueProperty().addListener(new ChangeListener<Integer>() {
+			@Override
+			public void changed(ObservableValue< ? extends Integer> ov, Integer t, Integer t1) {
+			    for (int i = 0; i < 8; i++) {
+			        TextField tf = playerFields.get(i);
+
+			        String playertext = localization.get("general-player") + " " + (i + 1);
+
+			        if (i >= t1) {
+			            tf.setText("");
+			            tf.setEditable(false);
+			            tf.setDisable(true);
+
+					} else {
+			            tf.setEditable(true);
+			            tf.setDisable(false);
+					}
+				}
+			}
+		});
+
+		// Create the game settings section heading.
+		final Text informationText = new Text(25, 25, localization.get("game-information-label"));
 
 		// Box for stopwatch setup and information.
 		final HBox stopwatchBox = new HBox(10);
 		stopwatchBox.setAlignment(Pos.CENTER);
 
 		// Create the text and input field.
-		final Text stopwatchText       = new Text("Stopwatch disabled");
-		final TextField stopwatchInput = new TextField("5.0");
+		final Text stopwatchText       = new Text(localization.get("game-information-stopwatch"));
+		final TextField stopwatchInput = new TextField("300");
 
 		// Add integer formatting to the textfield.
-		final TextFormatter<Integer> intformatter = new TextFormatter<>(new IntegerStringConverter());
-		stopwatchInput.setTextFormatter(intformatter);
-		stopwatchInput.setPromptText("Seconds");
+		final TextFormatter<Integer> stopwatchintformatter = new TextFormatter<>(new IntegerStringConverter());
+
+		stopwatchInput.setTextFormatter(stopwatchintformatter);
+		stopwatchInput.setPromptText("");
 		stopwatchInput.setPrefWidth(60);
 		stopwatchInput.setAlignment(Pos.CENTER);
 		stopwatchInput.setDisable(true);
@@ -120,7 +228,6 @@ public class Program extends Application {
 		stopwatchCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			public void changed(ObservableValue< ? extends Boolean> ov,
 			Boolean old_val, Boolean new_val) {
-			    stopwatchText.setText(new_val ? "Stopwatch enabled" : "Stopwatch disabled");
 			    stopwatchInput.setDisable(!new_val);
 			}
 		});
@@ -142,9 +249,9 @@ public class Program extends Application {
 		buttonBox.setAlignment(Pos.CENTER);
 
 		// Create the main game management buttons.
-		final Button playButton  = new Button("Start game");
-		final Button pauseButton = new Button("Pause game");
-		final Button stopButton  = new Button("Stop game");
+		final Button playButton  = new Button(localization.get("game-information-start"));
+		final Button pauseButton = new Button(localization.get("game-information-pause"));
+		final Button stopButton  = new Button(localization.get("game-information-stop"));
 
 		// Disable buttons that don't have any use in the beginning.
 		pauseButton.setDisable(true);
@@ -156,7 +263,7 @@ public class Program extends Application {
 		buttonBox.getChildren().add(stopButton);
 
 		// Text header for the location section.
-		final Text locationText     = new Text(25, 25, "Locations");
+		final Text locationText     = new Text(25, 25, localization.get("general-location-plural"));
 		final GridPane locationGrid = new GridPane();
 
 		locationGrid.setPadding(new Insets(10, 10, 10, 10));
@@ -194,16 +301,21 @@ public class Program extends Application {
 		// Separators. Used to split sections for easier overview.
 		final Separator separator1 = new Separator();
 		final Separator separator2 = new Separator();
+		final Separator separator3 = new Separator();
 
 		// Assign all elements to the vertical box we initially created.
-		verticalBox.getChildren().add(playerText);
-		verticalBox.getChildren().add(playerGrid);
-		verticalBox.getChildren().add(separator1);
 		verticalBox.getChildren().add(settingsText);
+		verticalBox.getChildren().add(settingsBox);
+		verticalBox.getChildren().add(separator1);
+		verticalBox.getChildren().add(playerText);
+		verticalBox.getChildren().add(countBox);
+		verticalBox.getChildren().add(playerGrid);
+		verticalBox.getChildren().add(separator2);
+		verticalBox.getChildren().add(informationText);
 		verticalBox.getChildren().add(stopwatchBox);
 		verticalBox.getChildren().add(infoBox);
 		verticalBox.getChildren().add(buttonBox);
-		verticalBox.getChildren().add(separator2);
+		verticalBox.getChildren().add(separator3);
 		verticalBox.getChildren().add(locationText);
 		verticalBox.getChildren().add(locationGrid);
 
@@ -215,12 +327,26 @@ public class Program extends Application {
 		// Set the main scene.
 		stage.setScene(mainScene);
 		stage.show();
-	} /* start */
+	} /* init */
+
+	public void shutdown() {
+		if (Debug.UI) System.out.println("Application is closing..");
+		spyfall.reset();
+	}
+
+	public void restart(Stage stage) {
+		stage.close();
+		init(stage);
+	}
+
+	@Override
+	public void start(Stage stage) {
+		init(stage);
+	}
 
 	@Override
 	public void stop() {
-		System.out.println("Application is closing..");
-		spyfall.reset();
+		shutdown();
 	}
 
 	public static String getLanguage() {
@@ -235,7 +361,7 @@ public class Program extends Application {
 	// Loads localized input data into the static data table used for locations and roles.
 	private static void loadLocale(String lang) {
 		// Fetch the resource location from the localized input file.
-		String localepath = Program.class.getClassLoader().getResource(lang + "_" + LOCALEFILE).getPath();
+		String localepath = Program.class.getClassLoader().getResource(lang + "_" + LOCALEFILENAME).getPath();
 
 		String content = ""; // Used as temporary storage for the input data.
 
@@ -251,7 +377,7 @@ public class Program extends Application {
 		// Initialize a new HashMap.
 		localization = new HashMap<String, String>();
 
-		if (DEBUG) System.out.println(lang.toUpperCase() + " UI CSV is loading.");
+		if (Debug.UI) System.out.println(lang.toUpperCase() + " UI CSV is loading.");
 
 		// Iterate over each line. Split each at the separator. Clean up the string and insert it into the location data array.
 		for (int i = 0; i < lines.length - 1; i++) {
@@ -259,10 +385,10 @@ public class Program extends Application {
 			try {
 				localization.put(fields[0], fields[1].trim());
 
-				if (DEBUG) System.out.println(i + ". " + fields[0] + " = " + fields[1].trim());
+				if (Debug.UI) System.out.println(i + ". " + fields[0] + " = " + fields[1].trim());
 
 			} catch (IndexOutOfBoundsException e) {
-				if (DEBUG) System.out.println(lang.toUpperCase() + " UI CSV: Line " + i
+				if (Debug.UI) System.out.println(lang.toUpperCase() + " UI CSV: Line " + i
 					  + " does not contain the right amount of fields (expected two fields).");
 			}
 		}
@@ -283,11 +409,6 @@ public class Program extends Application {
 
 	// Main program entry point.
 	public static void main(String[] args) {
-		loadLocale(lang);
-
-		// Create a new game of Spyfall. This also loads data for locations.
-		spyfall = new Game();
-
 		launch(args); // Start the main application.
 	}
 

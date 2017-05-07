@@ -21,10 +21,10 @@ public class Game {
 	private Boolean stopwatchActive  = false;       // If the stopwatch thread should run.
 	private long stopwatchTime       = DEFAULTTIME; // Set a stopwatch time by default.
 
-	public Game() {
-		if (Program.DEBUG) System.out.println("Spyfall game intilizing.");
+	public Game(String lang) {
+		if (Debug.GAME) System.out.println("Spyfall game intilizing.");
 
-		Location.loadData(Program.getLanguage());
+		Location.loadData(lang);
 
 		this.gamestate = 1; // Set the preparing gamestate.
 	}
@@ -42,7 +42,7 @@ public class Game {
 	 */
 
 	public void prepare(int pcount, long time) {
-		if (Program.DEBUG) System.out.println("Spyfall game preparing.");
+		if (Debug.GAME) System.out.println("Spyfall game preparing.");
 
 		// This should be handled with a return event later on.
 		if (pcount <= MAXPLAYERS)
@@ -61,7 +61,7 @@ public class Game {
 		this.location = new Location(this);
 
 		// Print game location information.
-		if (Program.DEBUG) {
+		if (Debug.GAME) {
 			System.out.println("Current game location: " + this.location.getID() + ". " + this.location.getName());
 			System.out.println("Roles: " + String.join(", ", this.location.getRoles()));
 		}
@@ -74,11 +74,11 @@ public class Game {
 	 */
 	public void start() {
 		if (this.gamestate != 1) {
-			if (Program.DEBUG) System.out.println("Game can not start without being prepared first.");
+			if (Debug.GAME) System.out.println("Game can not start without being prepared first.");
 			return;
 		}
 
-		if (Program.DEBUG) System.out.println("Spyfall game started.");
+		if (Debug.GAME) System.out.println("Spyfall game started.");
 
 		this.gamestate = 2;
 
@@ -92,7 +92,7 @@ public class Game {
 						try {
 							if (stopwatchActive) {
 								stopwatchTime--;
-								if (Program.DEBUG) System.out.print("Stopwatch seconds left: " + stopwatchTime + "\r");
+								if (Debug.GAME) System.out.print("Stopwatch seconds left: " + stopwatchTime + "\r");
 							}
 
 							if (stopwatchTime <= 0) gameover();
@@ -119,7 +119,7 @@ public class Game {
 		this.stopwatchActive  = false;
 		this.stopwatchTime    = 0;
 
-		if (Program.DEBUG) System.out.println("Spyfall game reset.");
+		if (Debug.GAME) System.out.println("Spyfall game reset.");
 	}
 
 	/*
@@ -129,9 +129,9 @@ public class Game {
 		if (this.gamestate == 2) {
 			this.stopwatchActive = false;
 
-			if (Program.DEBUG) System.out.println("Spyfall game paused.");
+			if (Debug.GAME) System.out.println("Spyfall game paused.");
 
-		} else if (Program.DEBUG) { System.out.println("Game can not be paused since it's not in progress."); }
+		} else if (Debug.GAME) { System.out.println("Game can not be paused since it's not in progress."); }
 	}
 
 	/**
@@ -141,9 +141,9 @@ public class Game {
 		if (this.gamestate == 2) {
 			this.stopwatchActive = true;
 
-			if (Program.DEBUG) System.out.println("Spyfall game unpaused.");
+			if (Debug.GAME) System.out.println("Spyfall game unpaused.");
 
-		} else if (Program.DEBUG) { System.out.println("Game can not be unpaused since it's not in progress."); }
+		} else if (Debug.GAME) { System.out.println("Game can not be unpaused since it's not in progress."); }
 	}
 
 	/**
@@ -153,14 +153,14 @@ public class Game {
 		this.gamestate       = 3; // Set the timeout gamestate.
 		this.stopwatchActive = false;
 
-		if (Program.DEBUG) System.out.println("Spyfall game finished and waiting for conclusion.");
+		if (Debug.GAME) System.out.println("Spyfall game finished and waiting for conclusion.");
 	}
 
 	// TODO: Evaluate the game result and state including guesses and votes.
 	public void conclude() {
 		this.gamestate = 4; // Set the conclusion gamestate.
 
-		if (Program.DEBUG) System.out.println("Spyfall game resolution and outcome.");
+		if (Debug.GAME) System.out.println("Spyfall game resolution and outcome.");
 	}
 
 	/**
@@ -168,14 +168,14 @@ public class Game {
 	 */
 	public void vote(int voterid, int suspectid) {
 		if (voterid < 0 || voterid > this.numPlayers - 1 || suspectid < 0 || suspectid > this.numPlayers - 1) {
-			if (Program.DEBUG) System.out.println("Invalid player id supplied during vote.");
+			if (Debug.GAME) System.out.println("Invalid player id supplied during vote.");
 			return;
 		}
 
 		if (voterid != suspectid) {
 			this.players[voterid].doVote(this.players[suspectid]);
 
-			if (Program.DEBUG) System.out.println(
+			if (Debug.GAME) System.out.println(
 					"Player " + (voterid + 1) + " voted for player " + (suspectid + 1)
 					+ ". Player " + (suspectid + 1) + " now has " + this.players[suspectid].getVotes() + " votes.");
 		}
@@ -266,7 +266,7 @@ public class Game {
 		this.spyID = p.getID();
 		p.setRole("Spy");
 
-		if (Program.DEBUG)
+		if (Debug.GAME)
 			System.out.println("Player " + (p.getID() + 1) + " has been picked as the Spy!");
 	}
 
@@ -300,7 +300,7 @@ public class Game {
 	 * 2 = Ingame
 	 * 3 = Completed
 	 * 4 = Resolution
-	 * @return Ganestate identifier.
+	 * @return Gamestate identifier.
 	 */
 	public int getGamestate() {
 		return this.gamestate;
@@ -312,7 +312,7 @@ public class Game {
 	public void setRoles() {
 		// Make sure a location has been initialized.
 		if (this.location == null) {
-			if (Program.DEBUG) System.out.println("Can't prepare roles. Game location has not been initialized.");
+			if (Debug.GAME) System.out.println("Can't prepare roles. Game location has not been initialized.");
 			return;
 		}
 
@@ -328,7 +328,7 @@ public class Game {
 				this.location.assignRole(this.players[i]);
 
 				// Print role information.
-				if (Program.DEBUG) {
+				if (Debug.GAME) {
 					String role = this.players[i].getRole();
 
 					if (role != null)

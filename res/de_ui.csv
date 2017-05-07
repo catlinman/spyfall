@@ -1,2 +1,26 @@
 name, value
-start, Spiel starten
+
+language, Deutsch
+lang, de
+
+language-en, Englisch
+language-de, Deutsch
+
+general-language, Sprache
+general-player, Spieler
+general-player-plural, Spieler
+general-location, Standort
+general-location-plural, Standorte
+
+application-settings-label, Anwendung
+application-settings-save, Speichern und neu starten
+application-settings-help, Hilfe
+
+player-information-label, Spielerinformationen
+player-information-numlabel, Anzahl Spieler
+
+game-information-label, Spiel Informationen
+game-information-stopwatch, Stoppuhr (in Sekunden)
+game-information-start, Spiel starten
+game-information-pause, Spiel pausieren
+game-information-stop, Spiel beenden

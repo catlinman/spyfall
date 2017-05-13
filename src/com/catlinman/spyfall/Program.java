@@ -1,6 +1,12 @@
 package com.catlinman.spyfall;
 
-// JavaFX imports.
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -11,31 +17,22 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.control.Separator;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
-
-// Data file imports.
-import java.nio.charset.Charset;
-import java.nio.file.Paths;
-import java.nio.file.Files;
-import java.io.IOException;
-
-// Utility imports.
-import java.util.ArrayList;
-import java.util.HashMap;
 
 // Main user interface application of this project.
 public class Program extends Application {
@@ -79,7 +76,7 @@ public class Program extends Application {
 
 		// Create the main stack and main scene.
 		final StackPane mainStack = new StackPane();
-		final Scene mainScene     = new Scene(mainStack, 800, 700);
+		final Scene mainScene     = new Scene(mainStack, 800, 600);
 
 		// Create the game settings section heading.
 		final Text settingsText = new Text(25, 25, localization.get("application-settings-label"));
@@ -322,7 +319,7 @@ public class Program extends Application {
 		// Assign the vertical box to the main stack to have all elements wrap.
 		mainStack.getChildren().add(verticalBox);
 
-		StackPane.setAlignment(mainStack, Pos.TOP_CENTER);
+		StackPane.setAlignment(mainStack, Pos.BASELINE_CENTER);
 
 		// Set the main scene.
 		stage.setScene(mainScene);

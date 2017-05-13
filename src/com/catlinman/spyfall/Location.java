@@ -1,12 +1,9 @@
 package com.catlinman.spyfall;
 
-// File handling imports.
-import java.nio.charset.Charset;
-import java.nio.file.Paths;
-import java.nio.file.Files;
 import java.io.IOException;
-
-// Utility imports.
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -97,7 +94,7 @@ class Location {
 		// Create a new three dimensional string array without the header and the right data length.
 		data = new String[lines.length - 1][8];
 
-		// Create the location name array which.
+		// Create the location name array.
 		locations = new String[lines.length - 1];
 
 		if (Debug.LOCATION) System.out.println(lang.toUpperCase() + " DATA CSV is loading.");

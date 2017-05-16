@@ -11,6 +11,7 @@ general-player, Spieler
 general-player-plural, Spieler
 general-location, Standort
 general-location-plural, Standorte
+general-spy, Spion
 
 application-settings-label, Anwendung
 application-settings-save, Speichern und neu starten
@@ -23,4 +24,12 @@ game-information-label, Spiel Informationen
 game-information-stopwatch, Stoppuhr (in Sekunden)
 game-information-start, Spiel starten
 game-information-pause, Spiel pausieren
+game-information-resume, Spiel fortsetzen
 game-information-stop, Spiel beenden
+
+reveal-role, Deine Rolle ist
+reveal-spy, Du bist der Spion!
+reveal-hidden, Der Standort ist für dich verborgen.
+reveal-show, Gedrückt halten um informationen zu zeigen
+reveal-close, Diese Spieler Karte schließen
+reveal-ready, Klicken um das Spiel zu starten

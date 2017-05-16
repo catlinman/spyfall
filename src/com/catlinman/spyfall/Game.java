@@ -17,16 +17,16 @@ public class Game {
     private Player[] players;  // Stores the current player objects.
 
     private Thread stopwatchThread;                 // Dedicated thread to handle the stopwatch.
-    private Boolean stopwatchEnabled = false;       // If the stopwatch thread should be launched.
-    private Boolean stopwatchActive  = false;       // If the stopwatch thread should run.
+    private boolean stopwatchEnabled = false;       // If the stopwatch thread should be launched.
+    private boolean stopwatchActive  = false;       // If the stopwatch thread should run.
     private long stopwatchTime       = DEFAULTTIME; // Set a stopwatch time by default.
 
-    public Game(String lang) {
-        if (Debug.GAME) System.out.println("Spyfall game intilizing.");
+    public Game() {
+        if (Debug.GAME) System.out.println(
+                "Spyfall: New game intilizing. Loading location data for the language key of " + Locale.getCurrent().toUpperCase()
+                + ".");
 
-        Location.loadData(lang);
-
-        this.gamestate = 1; // Set the preparing gamestate.
+        Location.initialize();
     }
 
     /*   ,ad8888ba,                                                  88                            88
@@ -42,7 +42,7 @@ public class Game {
      */
 
     public void prepare(int pcount, long time) {
-        if (Debug.GAME) System.out.println("Spyfall game preparing.");
+        if (Debug.GAME) System.out.println("Spyfall: Preparing the game by selection a location and assigning roles.");
 
         // This should be handled with a return event later on.
         if (pcount <= MAXPLAYERS)
@@ -62,23 +62,26 @@ public class Game {
 
         // Print game location information.
         if (Debug.GAME) {
-            System.out.println("Current game location: " + this.location.getID() + ". " + this.location.getName());
-            System.out.println("Roles: " + String.join(", ", this.location.getRoles()));
+            System.out.println(
+                "Spyfall: Current game location is " + this.location.getID() + ". " + this.location.getName());
+            System.out.println("Spyfall: The roles are " + String.join(", ", this.location.getRoles()));
         }
 
         this.setRoles(); // Assign roles to players.
+
+        this.gamestate = 1; // Set that we have reached the preparing gamestate.
     }
 
     /*
      * Prepares game logic and starts the main timer if enabled.
      */
     public void start() {
-        if (this.gamestate != 1) {
-            if (Debug.GAME) System.out.println("Game can not start without being prepared first.");
+        if (this.gamestate < 1) {
+            if (Debug.GAME) System.out.println("Spyfall: Game can not start without being prepared first.");
             return;
         }
 
-        if (Debug.GAME) System.out.println("Spyfall game started.");
+        if (Debug.GAME) System.out.println("Spyfall: Game started.");
 
         this.gamestate = 2;
 
@@ -90,9 +93,10 @@ public class Game {
                 public void run() {
                     while (gamestate == 2) {
                         try {
-                            if (stopwatchActive) {
+                            if (stopwatchActive == true) {
                                 stopwatchTime--;
-                                if (Debug.GAME) System.out.print("Stopwatch seconds left: " + stopwatchTime + "\r");
+                                if (Debug.GAME) System.out.print(
+                                        "Spyfall: Stopwatch seconds left: " + stopwatchTime + "\r");
                             }
 
                             if (stopwatchTime <= 0) gameover();
@@ -119,7 +123,7 @@ public class Game {
         this.stopwatchActive  = false;
         this.stopwatchTime    = 0;
 
-        if (Debug.GAME) System.out.println("Spyfall game reset.");
+        if (Debug.GAME) System.out.println("Spyfall: The game has been reset.");
     }
 
     /*
@@ -129,9 +133,9 @@ public class Game {
         if (this.gamestate == 2) {
             this.stopwatchActive = false;
 
-            if (Debug.GAME) System.out.println("Spyfall game paused.");
+            if (Debug.GAME) System.out.println("Spyfall: Game has been paused.");
 
-        } else if (Debug.GAME) { System.out.println("Game can not be paused since it's not in progress."); }
+        } else if (Debug.GAME) { System.out.println("Spyfall: Game can not be paused since it's not in progress."); }
     }
 
     /**
@@ -141,9 +145,9 @@ public class Game {
         if (this.gamestate == 2) {
             this.stopwatchActive = true;
 
-            if (Debug.GAME) System.out.println("Spyfall game unpaused.");
+            if (Debug.GAME) System.out.println("Spyfall: Game has been resumed.");
 
-        } else if (Debug.GAME) { System.out.println("Game can not be unpaused since it's not in progress."); }
+        } else if (Debug.GAME) { System.out.println("Spyfall: Game can not be resumed since it's not in progress."); }
     }
 
     /**
@@ -153,14 +157,14 @@ public class Game {
         this.gamestate       = 3; // Set the timeout gamestate.
         this.stopwatchActive = false;
 
-        if (Debug.GAME) System.out.println("Spyfall game finished and waiting for conclusion.");
+        if (Debug.GAME) System.out.println("Spyfall: Game finished and waiting for conclusion.");
     }
 
     // TODO: Evaluate the game result and state including guesses and votes.
     public void conclude() {
         this.gamestate = 4; // Set the conclusion gamestate.
 
-        if (Debug.GAME) System.out.println("Spyfall game resolution and outcome.");
+        if (Debug.GAME) System.out.println("Spyfall: Showing game resolution and outcome.");
     }
 
     /**
@@ -168,7 +172,7 @@ public class Game {
      */
     public void vote(int voterid, int suspectid) {
         if (voterid < 0 || voterid > this.numPlayers - 1 || suspectid < 0 || suspectid > this.numPlayers - 1) {
-            if (Debug.GAME) System.out.println("Invalid player id supplied during vote.");
+            if (Debug.GAME) System.out.println("Spyfall: Invalid player id supplied during vote.");
             return;
         }
 
@@ -176,7 +180,7 @@ public class Game {
             this.players[voterid].doVote(this.players[suspectid]);
 
             if (Debug.GAME) System.out.println(
-                    "Player " + (voterid + 1) + " voted for player " + (suspectid + 1)
+                    "Spyfall: Player " + (voterid + 1) + " voted for player " + (suspectid + 1)
                     + ". Player " + (suspectid + 1) + " now has " + this.players[suspectid].getVotes() + " votes.");
         }
     }
@@ -264,10 +268,10 @@ public class Game {
      */
     public void setSpyPlayer(Player p) {
         this.spyID = p.getID();
-        p.setRole("Spy");
+        p.setRole(Locale.get("general-spy"));
 
         if (Debug.GAME)
-            System.out.println("Player " + (p.getID() + 1) + " has been picked as the Spy!");
+            System.out.println("Spyfall: Player " + (p.getID() + 1) + " has been picked as the Spy!");
     }
 
     /**
@@ -293,6 +297,14 @@ public class Game {
     }
 
     /**
+     * Returns the game's pause state.
+     * @return boolean value of the game pause state.
+     */
+    public boolean getPaused() {
+        return this.stopwatchActive;
+    }
+
+    /**
      * Returns the current gamestate.
      * Gamestates:
      * 0 = Waiting
@@ -312,9 +324,12 @@ public class Game {
     public void setRoles() {
         // Make sure a location has been initialized.
         if (this.location == null) {
-            if (Debug.GAME) System.out.println("Can't prepare roles. Game location has not been initialized.");
+            if (Debug.GAME)
+                System.out.println("Spyfall: Can't prepare roles. Game location has not been initialized.");
+
             return;
         }
+
 
         // Start creating players and assigning roles.
         for (int i = 0; i < this.numPlayers; i++) {
@@ -332,8 +347,8 @@ public class Game {
                     String role = this.players[i].getRole();
 
                     if (role != null)
-                        System.out.println("Player " + (this.players[i].getID() + 1)
-                          + " has been assigned the role of " + this.players[i].getRole());
+                        System.out.println("Spyfall: Player " + (this.players[i].getID() + 1)
+                                           + " has been assigned the role of " + this.players[i].getRole());
                 }
             }
 

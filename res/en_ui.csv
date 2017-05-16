@@ -11,6 +11,7 @@ general-player, Player
 general-player-plural, Players
 general-location, Location
 general-location-plural, Locations
+general-spy, Spy
 
 application-settings-label, Application
 application-settings-save, Save and restart
@@ -23,4 +24,12 @@ game-information-label, Game information
 game-information-stopwatch, Stopwatch (in seconds)
 game-information-start, Start game
 game-information-pause, Pause game
+game-information-resume, Resume game
 game-information-stop, Stop game
+
+reveal-role, Your role is
+reveal-spy, You are the spy!
+reveal-hidden, The location is hidden from you.
+reveal-show, Click and hold to reveal information
+reveal-close, Close this player card
+reveal-ready, Click to begin the game

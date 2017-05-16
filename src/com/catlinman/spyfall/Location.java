@@ -7,8 +7,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
+// Localized location data is loaded from the key used by the Locale class.
 class Location {
-    // These variables are relevant to reading and storing the data file.
+    // These variables are relevant to reading the data file.
     private static final String SEPARATOR    = ",";
     private static final String DATAFILENAME = "location.csv";
 
@@ -25,7 +26,7 @@ class Location {
         this.game = game; // Bind the game instance to the class member.
 
         if (data == null) {
-            if (Debug.LOCATION) System.out.println("No location data present. Aborting location instantiation.");
+            if (Debug.DATA) System.out.println("No location data present. Aborting location instantiation.");
             return;
         }
 
@@ -75,7 +76,10 @@ class Location {
     }
 
     // Loads localized input data into the static data table used for locations and roles.
-    static void loadData(String lang) {
+    static void initialize() {
+        // Get the currently set language key.
+        String lang = Locale.getCurrent();
+
         // Fetch the resource location from the localized input file.
         String datapath = Location.class.getClassLoader().getResource(lang + "_" + DATAFILENAME).getPath();
 
@@ -97,11 +101,11 @@ class Location {
         // Create the location name array.
         locations = new String[lines.length - 1];
 
-        if (Debug.LOCATION) System.out.println(lang.toUpperCase() + " DATA CSV is loading.");
+        if (Debug.DATA) System.out.println("Data:" + lang.toUpperCase() + " is loading.");
 
         // Iterate over each line. Split each at the separator. Clean up the string and insert it into the location data array.
         for (int i = 0; i < lines.length - 1; i++) {
-            if (Debug.LOCATION) System.out.println(lines[i + 1]);
+            if (Debug.DATA) System.out.println(lines[i + 1]);
 
             try {
                 String[] fields = lines[i + 1].split(SEPARATOR); // Split the line using our separator symbol.
@@ -112,8 +116,11 @@ class Location {
                 locations[i] = data[i][0]; // Add this location name to the location array.
 
             } catch (IndexOutOfBoundsException e) {
-                if (Debug.LOCATION) System.out.println(lang.toUpperCase() + " DATA CSV: Line " + i
-                      + " does not contain the right amount of fields (expected 8 fields).");
+                if (Debug.DATA) System.out.println(lang.toUpperCase() + " DATA CSV: Line " + i
+                                                   + " does not contain the right amount of fields (expected 8 fields).");
+
+
+
             }
         }
     } /* loadData */

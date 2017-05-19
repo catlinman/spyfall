@@ -96,7 +96,10 @@ public class Locale {
      * @return data string.
      */
     public static String get(String key) {
-        return data.get(key);
+        // Make sure that missing locale default to the key for easier debugging.
+        String out = data.get(key);
+
+        return out != null ? out : key;
     }
 
     /**

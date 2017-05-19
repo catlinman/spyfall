@@ -3,6 +3,8 @@ package com.catlinman.spyfall;
 import java.lang.Thread;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
+
 
 // Main game entry point. Handles all game logic and timing as well as object interaction.
 public class Game {
@@ -20,6 +22,8 @@ public class Game {
     private boolean stopwatchEnabled = false;       // If the stopwatch thread should be launched.
     private boolean stopwatchActive  = false;       // If the stopwatch thread should run.
     private long stopwatchTime       = DEFAULTTIME; // Set a stopwatch time by default.
+
+    private Function<Long, Long> stopwatchCallback; // Callback function triggered when the stopwatch value changes.
 
     public Game() {
         if (Debug.GAME) System.out.println(
@@ -91,15 +95,24 @@ public class Game {
 
             new Thread() {
                 public void run() {
+                    stopwatchTime += 1;
+
                     while (gamestate == 2) {
                         try {
                             if (stopwatchActive == true) {
                                 stopwatchTime--;
                                 if (Debug.GAME) System.out.print(
                                         "Spyfall: Stopwatch seconds left: " + stopwatchTime + "\r");
+
+                                if(stopwatchCallback != null)
+                                    stopwatchCallback.apply(stopwatchTime);
                             }
 
-                            if (stopwatchTime <= 0) gameover();
+                            if (stopwatchTime <= 0) {
+                                if (Debug.GAME) System.out.print("\n");
+
+                                gameover();
+                            }
 
                             Thread.sleep(1000);
 
@@ -294,6 +307,14 @@ public class Game {
      */
     public long getTimeLeft() {
         return this.stopwatchTime;
+    }
+
+    /**
+     * Sets the callback for the stopwatch change.
+     * @param Function<Long, Long> func Function to be called on stopwatch time change.
+     */
+    public void setStopwatchCallback(Function<Long, Long> func) {
+        this.stopwatchCallback = func;
     }
 
     /**

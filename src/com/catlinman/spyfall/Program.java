@@ -43,48 +43,46 @@ public class Program extends Application {
 
     private static Game spyfall; // The main game object.
 
-    /**
-     * Creates a notification window prompting the player to start the game.
-     */
-    private void createReadyWindow() {
-        // Prepare a new stage.
-        final Stage readyStage = new Stage();
+    private void createHelpWindow() {
+        // Prepare the new help window stage.
+        final Stage helpStage = new Stage();
 
         // Set the correct window title.
-        readyStage.setTitle("Spyfall - Ready");
+        helpStage.setTitle("Spyfall - " + Locale.get("window-help-title"));
 
-        // Create the main stack.
-        final StackPane readyStack = new StackPane();
+        // Create the help window stack stack.
+        final StackPane helpStack = new StackPane();
 
-        if (Debug.APP) System.out.println("Application: Showing game ready window.");
+        if (Debug.APP) System.out.println("Application: Showing game help window.");
 
         // Create a VBox for easier alignment.
-        final VBox readyBox = new VBox(10);
+        final VBox helpBox = new VBox(10);
+        helpBox.setPadding(new Insets(10, 10, 10, 10));
+        helpBox.setAlignment(Pos.TOP_CENTER);
 
-        readyBox.setPadding(new Insets(20, 10, 20, 10));
-        readyBox.setAlignment(Pos.TOP_CENTER);
-
-        final Button readyButton = new Button(Locale.get("reveal-ready"));
-        readyButton.setMinWidth(430);
+        final Button helpCloseButton = new Button(Locale.get("window-help-close"));
+        helpCloseButton.setMinWidth(430);
 
         // Add a close button to make things simpler for the user.
-        readyButton.setOnAction(event -> {
-            readyStage.close();
+        helpCloseButton.setOnAction(event -> {
+            helpStage.close();
         });
 
-        // Add components to each other.
-        readyBox.getChildren().add(readyButton);
-        readyStack.getChildren().add(readyBox);
+
+        // Add components.
+        helpBox.getChildren().add(helpCloseButton);
+
+        helpStack.getChildren().add(helpBox);
 
         // Set the scene for this window which we have prepared.
-        readyStage.setScene(new Scene(readyStack, 450, 60));
+        helpStage.setScene(new Scene(helpStack, 450, 400));
 
         // Make sure that this window remains on top of others.
-        readyStage.setAlwaysOnTop(true);
+        helpStage.setAlwaysOnTop(true);
 
         // Show the stage and make sure to halt the main stage execution.
-        readyStage.showAndWait();
-    } /* createReadyWindow */
+        helpStage.showAndWait();
+    } /* createHelpWindow */
 
     /**
      * Creates an overlay window which displays player identity information.
@@ -93,12 +91,12 @@ public class Program extends Application {
      * @param String location Location designation.
      * @param String role     Role of the specified player.
      */
-    private void createPlayerWindow(int player, String name, String location, String role) {
+    private void createRevealWindow(int player, String name, String location, String role) {
         // Prepare a new stage.
         final Stage revealStage = new Stage();
 
         // Set the correct window title.
-        revealStage.setTitle("Spyfall - Player " + player);
+        revealStage.setTitle("Spyfall - " + Locale.get("general-player") + " " + player);
 
         // Create the main stack.
         final StackPane revealStack = new StackPane();
@@ -107,7 +105,7 @@ public class Program extends Application {
 
         // Create the vertical alignment box which all elements will be stored in.
         final VBox revealBox = new VBox(10);
-        revealBox.setPadding(new Insets(15, 10, 10, 10));
+        revealBox.setPadding(new Insets(10, 10, 10, 10));
         revealBox.setAlignment(Pos.TOP_CENTER);
 
         // Create a special VBox that contains the secret identity information.
@@ -121,7 +119,7 @@ public class Program extends Application {
         // Creat the texts used in this window.
         final Text playerText   = new Text(250, 250, Locale.get("general-player") + " " + player);
         final Text locationText = new Text(250, 250, " - " + location + " - ");
-        final Text roleText     = new Text(250, 250, Locale.get("reveal-role") + " \"" + role + "\"");
+        final Text roleText     = new Text(250, 250, Locale.get("window-reveal-role") + " \"" + role + "\"");
 
         // If a name was supplied we add it to the header.
         if (!name.equals(""))
@@ -129,8 +127,8 @@ public class Program extends Application {
 
         // If the player is the spy we make sure to hide location & role information.
         if (role == Locale.get("general-spy")) {
-            locationText.setText(Locale.get("reveal-hidden"));
-            roleText.setText(Locale.get("reveal-spy"));
+            locationText.setText(Locale.get("window-reveal-hidden"));
+            roleText.setText(Locale.get("window-reveal-spy"));
         }
 
         // Set the custom font
@@ -147,8 +145,8 @@ public class Program extends Application {
         hiddenBox.getChildren().add(roleText);
 
         // Create buttons for the window.
-        final Button showButton  = new Button(Locale.get("reveal-show"));
-        final Button closeButton = new Button(Locale.get("reveal-close"));
+        final Button showButton  = new Button(Locale.get("window-reveal-show"));
+        final Button closeButton = new Button(Locale.get("window-reveal-close"));
 
         // Make the buttons fill the width of the window.
         showButton.setMinWidth(430);
@@ -196,7 +194,53 @@ public class Program extends Application {
 
         // Show the stage and make sure to halt the main stage execution.
         revealStage.showAndWait();
-    } /* createPlayerWindow */
+    } /* createRevealWindow */
+
+    /**
+     * Creates a notification window prompting the player to start the game.
+     */
+    private void createReadyWindow() {
+        // Prepare a new stage.
+        final Stage readyStage = new Stage();
+
+        // Set the correct window title.
+        readyStage.setTitle("Spyfall - " + Locale.get("window-ready-title"));
+
+        // Create the ready window stack.
+        final StackPane readyStack = new StackPane();
+
+        if (Debug.APP) System.out.println("Application: Showing game ready window.");
+
+        // Create a VBox for easier alignment.
+        final VBox readyBox = new VBox(10);
+        readyBox.setPadding(new Insets(20, 10, 20, 10));
+        readyBox.setAlignment(Pos.TOP_CENTER);
+
+        final Button readyButton = new Button(Locale.get("window-ready-close"));
+        readyButton.setMinWidth(430);
+
+        // Add a close button to make things simpler for the user.
+        readyButton.setOnAction(event -> {
+            readyStage.close();
+        });
+
+        // Add components to each other.
+        readyBox.getChildren().add(readyButton);
+        readyStack.getChildren().add(readyBox);
+
+        // Set the scene for this window which we have prepared.
+        readyStage.setScene(new Scene(readyStack, 450, 60));
+
+        // Make sure that this window remains on top of others.
+        readyStage.setAlwaysOnTop(true);
+
+        // Show the stage and make sure to halt the main stage execution.
+        readyStage.showAndWait();
+    } /* createReadyWindow */
+
+    private void createResolutionWindow() {
+        // TODO: Show location and role information here.
+    }
 
     private void init(Stage stage) {
         // Create a new game of Spyfall. This also loads data for locations.
@@ -235,17 +279,22 @@ public class Program extends Application {
         final Button saveButton = new Button(Locale.get("application-settings-save"));
         final Button helpButton = new Button(Locale.get("application-settings-help"));
 
-        saveButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                Locale.initialize(Locale.getSupported()[languageDropdown.getSelectionModel().getSelectedIndex()]);
+        saveButton.setOnAction(event -> {
+            Locale.initialize(Locale.getSupported()[languageDropdown.getSelectionModel().getSelectedIndex()]);
 
-                if (Debug.APP) System.out.println("Application: Switching language key to "
-                                                  + Locale.getCurrent().toUpperCase()
-                                                  + " and restarting the application.");
+            if (Debug.APP) System.out.println("Application: Switching language key to "
+                                              + Locale.getCurrent().toUpperCase()
+                                              + " and restarting the application.");
 
-                restart(stage);
-            }
+            restart(stage);
+        });
+
+        helpButton.setOnAction(event -> {
+            veil.setVisible(true);
+
+            createHelpWindow();
+
+            veil.setVisible(false);
         });
 
         // Assign all buttons to the button divider box.
@@ -347,7 +396,7 @@ public class Program extends Application {
         stopwatchBox.setAlignment(Pos.CENTER);
 
         // Create the text and input field.
-        final Text stopwatchText       = new Text(Locale.get("game-information-stopwatch"));
+        final Text stopwatchText       = new Text(Locale.get("game-information-endwatch"));
         final TextField stopwatchInput = new TextField(new IntegerStringConverter().toString(300));
 
         // Add integer formatting to the textfield.
@@ -357,10 +406,10 @@ public class Program extends Application {
         stopwatchInput.setPromptText("");
         stopwatchInput.setPrefWidth(60);
         stopwatchInput.setAlignment(Pos.CENTER);
-        stopwatchInput.setDisable(true);
         stopwatchInput.addEventFilter(KeyEvent.KEY_TYPED, maxLength(5));
 
         final CheckBox stopwatchCheckBox = new CheckBox();
+        stopwatchCheckBox.setSelected(true);
 
         stopwatchCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
             public void changed(ObservableValue< ? extends Boolean> ov,
@@ -375,10 +424,18 @@ public class Program extends Application {
         stopwatchBox.getChildren().add(stopwatchInput);
 
         // Box for game information and stopwatch countdown. Is enabled after start.
-        final HBox infoBox = new HBox(10);
+        final VBox infoBox = new VBox(10);
         infoBox.setAlignment(Pos.CENTER);
         infoBox.setVisible(false);
         infoBox.setManaged(false);
+
+        // Font used for the stopwatch.
+        final Font stopwatchFont = Font.font(null, 20);
+
+        final Text stopwatchCounter = new Text("");
+        stopwatchCounter.setFont(stopwatchFont);
+
+        infoBox.getChildren().add(stopwatchCounter);
 
         // Horizontal section box for all the buttons.
         final HBox buttonBox = new HBox(10);
@@ -388,7 +445,7 @@ public class Program extends Application {
         // Create the main game management buttons.
         final Button startButton = new Button(Locale.get("game-information-start"));
         final Button pauseButton = new Button(Locale.get("game-information-pause"));
-        final Button stopButton  = new Button(Locale.get("game-information-stop"));
+        final Button stopButton  = new Button(Locale.get("game-information-end"));
 
         // Disable buttons that don't have any use in the beginning.
         pauseButton.setDisable(true);
@@ -399,8 +456,11 @@ public class Program extends Application {
             // Get the player count value from the dropdown box used for the player fields.
             int playerCount = Integer.parseInt(countDropdown.getSelectionModel().getSelectedItem().toString());
 
+            // Get the stopwatch time from the input box if it's enabled.
+            int stopwatchTime = stopwatchCheckBox.isSelected() ? Integer.parseInt(stopwatchInput.getText()) : 0;
+
             // Prepare the game with the correct player count.
-            spyfall.prepare(playerCount, 300);
+            spyfall.prepare(playerCount, stopwatchTime);
 
             // Drop focus of the main window.
             veil.setVisible(true);
@@ -411,10 +471,30 @@ public class Program extends Application {
 
             // Show each player their identity card.
             for (int i = 0; i < playerCount; i++)
-                createPlayerWindow(i + 1, playerFields[i].getText(), location, players[i].getRole());
+                createRevealWindow(i + 1, playerFields[i].getText(), location, players[i].getRole());
 
             // Create an extra window after which the game will start.
             createReadyWindow();
+
+            // Prepare the stopwatch callback and correct text.
+            if(stopwatchCheckBox.isSelected() == true) {
+                stopwatchCounter.setText(stopwatchInput.getText());
+
+                spyfall.setStopwatchCallback((Long l) -> {
+                    if(l != 0) {
+                        stopwatchCounter.setText(Locale.get("game-information-timeleft") + ": " + l.toString());
+
+                    } else {
+                        stopwatchCounter.setText(Locale.get("game-information-gameover"));
+                        pauseButton.setDisable(true);
+                    }
+
+                    return l;
+                });
+
+            } else {
+                stopwatchCounter.setText(Locale.get("game-information-progress"));
+            }
 
             // Return focus.
             veil.setVisible(false);
@@ -423,10 +503,22 @@ public class Program extends Application {
             spyfall.start();
 
             // Make sure that the gamestate is set to play.
-            if (spyfall.getGamestate() == 2) {
+            if (spyfall.getGamestate() == 2) { // Disable the main boxes used for program and game settings.
+                settingsBox.setDisable(true);
+                playerGrid.setDisable(true);
+                countBox.setDisable(true);
+
                 startButton.setDisable(true);
-                pauseButton.setDisable(false);
                 stopButton.setDisable(false);
+
+                stopwatchBox.setVisible(false);
+                stopwatchBox.setManaged(false);
+
+                infoBox.setVisible(true);
+                infoBox.setManaged(true);
+
+                if (stopwatchCheckBox.isSelected()) // Enable the pause button if the stopwatch is active.
+                    pauseButton.setDisable(false);
             }
         });
 
@@ -434,7 +526,7 @@ public class Program extends Application {
         pauseButton.setOnAction(event -> {
             // Make sure that we are ingame for this logic.
             if (spyfall.getGamestate() == 2) {
-                if (!spyfall.getPaused()) {
+                if (spyfall.getPaused() == true) {
                     spyfall.pause();
                     pauseButton.setText(Locale.get("game-information-resume"));
 
@@ -445,7 +537,35 @@ public class Program extends Application {
             }
         });
 
-        stopButton.setOnAction(event -> {});
+        stopButton.setOnAction(event -> {
+            // Enable the main menu elements again.
+            settingsBox.setDisable(false);
+            playerGrid.setDisable(false);
+            countBox.setDisable(false);
+
+            stopwatchBox.setVisible(true);
+            stopwatchBox.setManaged(true);
+
+            infoBox.setVisible(false);
+            infoBox.setManaged(false);
+
+            // Conclude the game by triggering the gameover state.
+            spyfall.gameover();
+
+            // Open a window with the game conclusion information.
+            createResolutionWindow();
+
+            // Reset the game for further rounds.
+            spyfall.reset();
+
+            // Reset button states.
+            startButton.setDisable(false);
+            pauseButton.setDisable(true);
+            stopButton.setDisable(true);
+
+            // Reset the pause button in case it was changed.
+            pauseButton.setText(Locale.get("game-information-pause"));
+        });
 
         // Assign all buttons to the button divider box.
         buttonBox.getChildren().add(startButton);

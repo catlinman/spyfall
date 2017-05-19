@@ -21,15 +21,15 @@ player-information-label, Spielerinformationen
 player-information-numlabel, Anzahl Spieler
 
 game-information-label, Spiel Informationen
-game-information-stopwatch, Stoppuhr (in Sekunden)
+game-information-endwatch, Stoppuhr (in Sekunden)
 game-information-start, Spiel starten
 game-information-pause, Spiel pausieren
 game-information-resume, Spiel fortsetzen
-game-information-stop, Spiel beenden
+game-information-end, Spiel beenden
 
-reveal-role, Deine Rolle ist
-reveal-spy, Du bist der Spion!
-reveal-hidden, Der Standort ist für dich verborgen.
-reveal-show, Gedrückt halten um informationen zu zeigen
-reveal-close, Diese Spieler Karte schließen
-reveal-ready, Klicken um das Spiel zu starten
+window-reveal-role, Deine Rolle ist
+window-reveal-spy, Du bist der Spion!
+window-reveal-hidden, Der Standort ist für dich verborgen.
+window-reveal-show, Gedrückt halten um informationen zu zeigen
+window-reveal-close, Diese Spieler Karte schließen
+window-reveal-ready, Klicken um das Spiel zu starten

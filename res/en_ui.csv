@@ -21,15 +21,25 @@ player-information-label, Player information
 player-information-numlabel, Number of players
 
 game-information-label, Game information
-game-information-stopwatch, Stopwatch (in seconds)
+game-information-endwatch, Stopwatch (in seconds)
 game-information-start, Start game
 game-information-pause, Pause game
 game-information-resume, Resume game
-game-information-stop, Stop game
+game-information-end, End game
+game-information-progress, The game is in progress!
+game-information-timeleft, Time left (in seconds)
+game-information-gameover, Time's up! Decide on a Spy now!
 
-reveal-role, Your role is
-reveal-spy, You are the spy!
-reveal-hidden, The location is hidden from you.
-reveal-show, Click and hold to reveal information
-reveal-close, Close this player card
-reveal-ready, Click to begin the game
+window-help-title, Help
+window-help-close, Click to close this window
+
+window-reveal-role, Your role is
+window-reveal-spy, You are the spy!
+window-reveal-hidden, The location is hidden from you.
+window-reveal-show, Click and hold to reveal information
+window-reveal-close, Close this player card
+
+window-ready-title, Ready
+window-ready-close, Click to begin the game
+
+window-conclude-close, Click to conclude the game

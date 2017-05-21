@@ -34,6 +34,7 @@ import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.application.Platform;
+import javafx.scene.control.Hyperlink;
 
 // Main user interface application of this project.
 public class Program extends Application {
@@ -60,22 +61,61 @@ public class Program extends Application {
         helpBox.setPadding(new Insets(10, 10, 10, 10));
         helpBox.setAlignment(Pos.TOP_CENTER);
 
+        // Font used in this window.
+        final Font headerFont = Font.font(null, 20);
+        final Text helpHeader = new Text(Locale.get("window-help-header"));
+        helpHeader.setFont(headerFont);
+
+        // Split the main text into two parts and make sure they wrap and align correctly.
+        final Text helpText1 = new Text(Locale.get("window-help-text1"));
+        helpText1.setWrappingWidth(430);
+        helpText1.setTextAlignment(TextAlignment.JUSTIFY);
+
+        final Text helpText2 = new Text(Locale.get("window-help-text2"));
+        helpText2.setWrappingWidth(430);
+        helpText2.setTextAlignment(TextAlignment.JUSTIFY);
+
+        // Create a clickable button for the source code link.
+        final Hyperlink helpSource = new Hyperlink(Locale.get("window-help-source"));
+        helpSource.setOnAction(event -> {
+            if (Debug.APP) System.out.println("Application: Closing help window and showing opening source code page.");
+
+            helpStage.close();
+            getHostServices().showDocument("https://github.com/catlinman/spyfall");
+        });
+
+        // Set the correct link styling.
+        helpSource.setStyle("-fx-border-color: null; -fx-border-style: solid; -fx-border-width: 0px; -fx-underline: true;");
+
         final Button helpCloseButton = new Button(Locale.get("window-help-close"));
         helpCloseButton.setMinWidth(430);
 
         // Add a close button to make things simpler for the user.
         helpCloseButton.setOnAction(event -> {
+            if (Debug.APP) System.out.println("Application: Closing help window and returning focus.");
+
             helpStage.close();
         });
 
+        // Segment separators to keep things cleaner.
+        final Separator separatorHelp1 = new Separator();
+        final Separator separatorHelp2 = new Separator();
+        final Separator separatorHelp3 = new Separator();
 
         // Add components.
+        helpBox.getChildren().add(helpHeader);
+        helpBox.getChildren().add(separatorHelp1);
+        helpBox.getChildren().add(helpText1);
+        helpBox.getChildren().add(helpText2);
+        helpBox.getChildren().add(separatorHelp2);
+        helpBox.getChildren().add(helpSource);
+        helpBox.getChildren().add(separatorHelp3);
         helpBox.getChildren().add(helpCloseButton);
 
         helpStack.getChildren().add(helpBox);
 
         // Set the scene for this window which we have prepared.
-        helpStage.setScene(new Scene(helpStack, 450, 400));
+        helpStage.setScene(new Scene(helpStack, 450, 380));
 
         // Make sure that this window remains on top of others.
         helpStage.setAlwaysOnTop(true);
@@ -477,11 +517,11 @@ public class Program extends Application {
             createReadyWindow();
 
             // Prepare the stopwatch callback and correct text.
-            if(stopwatchCheckBox.isSelected() == true) {
+            if (stopwatchCheckBox.isSelected() == true) {
                 stopwatchCounter.setText(stopwatchInput.getText());
 
                 spyfall.setStopwatchCallback((Long l) -> {
-                    if(l != 0) {
+                    if (l != 0) {
                         stopwatchCounter.setText(Locale.get("game-information-timeleft") + ": " + l.toString());
 
                     } else {

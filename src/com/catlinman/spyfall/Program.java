@@ -35,14 +35,80 @@ import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.application.Platform;
 import javafx.scene.control.Hyperlink;
+import java.nio.file.NoSuchFileException;
 
 // Main user interface application of this project.
 public class Program extends Application {
+    // Configuration file name and separator.
+    private static final String CONFIGFILE  = "spyfall.cfg";
+    private static final String CONFIGSPLIT = "=";
+
+    // Configuration data.
+    private static HashMap<String, String> CONFIG;
+
     // Base width and height values without taking location list in account.
     private static final int WIDTH  = 800;
     private static final int HEIGHT = 450;
 
     private static Game spyfall; // The main game object.
+
+    private void readConfig() {
+        // Initialize the configuration HashMap.
+        CONFIG = new HashMap<String, String>();
+
+        // Set default values.
+        CONFIG.put("lang", "en");
+
+        // Initialize the content string.
+        String content = "";
+
+        // Read the configuration file contents.
+        try {
+            byte[] encoded = Files.readAllBytes(Paths.get("./" + CONFIGFILE));
+            content = new String(encoded, Charset.defaultCharset());
+
+        } catch (IOException e) {
+            return;
+        }
+
+        if (Debug.DATA) System.out.println("Data: Loading Spyfall config file.");
+
+        // Split each line into a new string.
+        String[] lines = content.split("\n");
+
+        // Iterate over lines and start inserting key & values into the HashMap.
+        for (int i = 0; i < lines.length; i++) {
+            String[] fields = lines[i].split(CONFIGSPLIT, 2);
+
+            try {
+                if (Debug.DATA) System.out.println(lines[i]);
+
+                CONFIG.put(fields[0], fields[1].trim());
+
+            } catch(IndexOutOfBoundsException e) {
+                if (Debug.DATA) System.out.println(
+                        "Data: Error in " + CONFIGFILE + " line " + i
+                        + " does not contain the right amount of fields (expected two fields).");
+            }
+        }
+    }
+
+    private void writeConfig() {
+        // Create a separate String for iterating of bytes.
+        String writeString = "lang=" + Locale.getCurrent();
+
+        // Write to the config file.
+        try {
+            Files.write(Paths.get("./" + CONFIGFILE), writeString.getBytes());
+
+        } catch (IOException e) {
+            if(Debug.DATA) e.printStackTrace();
+
+            return;
+        }
+
+        if (Debug.DATA) System.out.println("Data: Wrote Spyfall config file.");
+    }
 
     private void createHelpWindow() {
         // Prepare the new help window stage.
@@ -320,15 +386,21 @@ public class Program extends Application {
         final Button helpButton = new Button(Locale.get("application-settings-help"));
 
         saveButton.setOnAction(event -> {
+            // Load the new locale.
             Locale.initialize(Locale.getSupported()[languageDropdown.getSelectionModel().getSelectedIndex()]);
+
+            // Write the change to the configuration file.
+            writeConfig();
 
             if (Debug.APP) System.out.println("Application: Switching language key to "
                                               + Locale.getCurrent().toUpperCase()
                                               + " and restarting the application.");
 
+            // Restart the main stage with the new locale changes.
             restart(stage);
         });
 
+        // Set the action event for the help button.
         helpButton.setOnAction(event -> {
             veil.setVisible(true);
 
@@ -699,8 +771,11 @@ public class Program extends Application {
 
     @Override
     public void start(Stage stage) {
+        // Load the configuration.
+        readConfig();
+
         // Initialize the Locale with the default key.
-        Locale.initialize("");
+        Locale.initialize(CONFIG.get("lang"));
 
         // Start the main application.
         init(stage);

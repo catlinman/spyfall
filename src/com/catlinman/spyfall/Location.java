@@ -101,14 +101,14 @@ class Location {
         // Create the location name array.
         locations = new String[lines.length - 1];
 
-        if (Debug.DATA) System.out.println("Data:" + lang.toUpperCase() + " is loading.");
+        if (Debug.DATA) System.out.println("Data: Location information " + lang.toUpperCase() + " is loading.");
 
         // Iterate over each line. Split each at the separator. Clean up the string and insert it into the location data array.
         for (int i = 0; i < lines.length - 1; i++) {
             if (Debug.DATA) System.out.println(lines[i + 1]);
 
             try {
-                String[] fields = lines[i + 1].split(SEPARATOR); // Split the line using our separator symbol.
+                String[] fields = lines[i + 1].split(SEPARATOR); // Split the line using our separator symbol and skip the header.
 
                 // Create strings from the input data and make sure that they are formatted correctly.
                 for (int j = 0; j < fields.length; j++) data[i][j] = Utilities.capitalize(fields[j]);

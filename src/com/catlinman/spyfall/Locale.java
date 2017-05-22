@@ -39,11 +39,14 @@ public class Locale {
         // Make sure that the supplied language is supported.
         boolean langfound = false;
 
-        for (String s : LANGUAGES)
-            if (l == s) {
-                langfound = true;
-                break;
-            }
+        // Make sure the language key exists.
+        if(l != null) {
+            for (String s : LANGUAGES)
+                if (l.equals(s)) {
+                    langfound = true;
+                    break;
+                }
+        }
 
         // Set to the first language key if the supplied key doesn't exist.
         if (langfound == false) l = LANGUAGES[0];
@@ -71,7 +74,8 @@ public class Locale {
 
         // Iterate over each line. Split each at the separator. Clean up the string and insert it into the location data array.
         for (int i = 0; i < lines.length - 1; i++) {
-            String[] fields = lines[i + 1].split(SEPARATOR, 2);
+            String[] fields = lines[i + 1].split(SEPARATOR, 2); // Make sure to skip the first header line.
+
             try {
                 data.put(fields[0], fields[1].trim());
 
@@ -81,8 +85,6 @@ public class Locale {
                 if (Debug.DATA) System.out.println(
                         "Data: Error in " + l.toUpperCase() + " UI CSV line " + i
                         + " does not contain the right amount of fields (expected two fields).");
-
-
             }
         }
 

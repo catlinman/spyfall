@@ -293,7 +293,7 @@ public class Program extends Application {
         revealStack.getChildren().add(revealBox);
 
         // Set the scene for this window which we have prepared.
-        revealStage.setScene(new Scene(revealStack, 450, 230));
+        revealStage.setScene(new Scene(revealStack, 450, 220));
 
         // Make sure that this window remains on top of others.
         revealStage.setAlwaysOnTop(true);
@@ -345,7 +345,80 @@ public class Program extends Application {
     } /* createReadyWindow */
 
     private void createResolutionWindow() {
-        // TODO: Show location and role information here.
+        // Prepare a new stage.
+        final Stage resolutionStage = new Stage();
+
+        // Set the correct window title.
+        resolutionStage.setTitle("Spyfall - " + Locale.get("window-resolution-title"));
+
+        // Create the main stack.
+        final StackPane resolutionStack = new StackPane();
+
+        if (Debug.APP) System.out.println("Application: Showing game resolution window.");
+
+        // Create the vertical alignment box which all elements will be stored in.
+        final VBox resolutionBox = new VBox(10);
+        resolutionBox.setPadding(new Insets(10, 10, 10, 10));
+        resolutionBox.setAlignment(Pos.TOP_CENTER);
+
+        // Font used in this window.
+        final Font resolutionFont = Font.font(null, 20);
+
+        // Get the current game location.
+        Location location = spyfall.getLocation();
+
+        // Creat the texts used in this window.
+        final Text headerText = new Text(250, 250, Locale.get("window-resolution-header"));
+        final Text locationText = new Text(250, 250, Locale.get("general-location") + ": " + location.getName());
+
+        // Set the custom font
+        headerText.setFont(resolutionFont);
+        locationText.setFont(resolutionFont);
+
+        // Create the close button for this window.
+        final Button closeButton = new Button(Locale.get("window-resolution-close"));
+        closeButton.setMinWidth(430); // Make the buttons fill the width of the window.
+
+        // Add a close button to make things simpler for the user.
+        closeButton.setOnAction(event -> {
+            resolutionStage.close();
+        });
+
+        // Segment separators to keep things cleaner.
+        final Separator separatorResolution1 = new Separator();
+        final Separator separatorResolution2 = new Separator();
+
+        // Add the header and first separator.
+        resolutionBox.getChildren().add(headerText);
+        resolutionBox.getChildren().add(separatorResolution1);
+        resolutionBox.getChildren().add(locationText);
+
+        // Retrieve the player array.
+        Player[] players = spyfall.getPlayers();
+
+        for (int i = 0; i < spyfall.getNumPlayers(); i++) {
+
+            final Text playerText = new Text(250, 250, Locale.get("general-player") + " " + (i + 1) + ": " + players[i].getRole());
+            resolutionBox.getChildren().add(playerText);
+
+            resolutionStage.setHeight(160 + 28 + (28 * i));
+        }
+
+        // Add the second separator and close button.
+        resolutionBox.getChildren().add(separatorResolution2);
+        resolutionBox.getChildren().add(closeButton);
+
+        // Add the main VBox to the stack.
+        resolutionStack.getChildren().add(resolutionBox);
+
+        // Set the scene for this window which we have prepared.
+        resolutionStage.setScene(new Scene(resolutionStack, 450, 150));
+
+        // Make sure that this window remains on top of others.
+        resolutionStage.setAlwaysOnTop(true);
+
+        // Show the stage and make sure to halt the main stage execution.
+        resolutionStage.showAndWait();
     }
 
     private void init(Stage stage) {
@@ -582,8 +655,10 @@ public class Program extends Application {
             String location = spyfall.getLocation().getName();
 
             // Show each player their identity card.
-            for (int i = 0; i < playerCount; i++)
+            for (int i = 0; i < playerCount; i++) {
+                players[i].setName(playerFields[i].getText()); // Set the player name.
                 createRevealWindow(i + 1, playerFields[i].getText(), location, players[i].getRole());
+            }
 
             // Create an extra window after which the game will start.
             createReadyWindow();
@@ -664,8 +739,14 @@ public class Program extends Application {
             // Conclude the game by triggering the gameover state.
             spyfall.gameover();
 
+            // Drop focus of the main window.
+            veil.setVisible(true);
+
             // Open a window with the game conclusion information.
             createResolutionWindow();
+
+            // Return focus.
+            veil.setVisible(false);
 
             // Reset the game for further rounds.
             spyfall.reset();

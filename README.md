@@ -12,9 +12,9 @@ Spyfall is a game where players are each assigned a role and a general location.
 One player is randomly selected and does not receive any information. This
 player is the Spy. The Spy's goal is to find out the location in which the game
 is currently taking place. At no point are normal players allowed to reveal
-their role or the location. Players each take turns asking other players
-questions attempting to find out who the spy within a limited amount of time.
-Players can make a majority vote they call out a player to be the spy. If the
+their role or the location. Players take turns asking other players questions,
+attempting to find out who the spy is within a limited amount of time. Players
+can make a majority vote where they decide on a player to be the spy. If the
 given player is the spy after the vote successfully passes the spy loses and
 everyone else wins. If the selection is not the spy, the real spy wins the game.
 The spy can also win the game at any point by calling a timeout and attempting

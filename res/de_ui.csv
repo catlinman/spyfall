@@ -26,10 +26,26 @@ game-information-start, Spiel starten
 game-information-pause, Spiel pausieren
 game-information-resume, Spiel fortsetzen
 game-information-end, Spiel beenden
+game-information-progress, Das Spiel ist im Gange!
+game-information-timeleft, Verbleibende Zeit
+game-information-gameover, Die Zeit ist um! Wählt einen Spion!
+
+window-help-title, Hilfe
+window-help-header, Spielregeln
+window-help-close, Klicken, um dieses Fenster zu schließen
+window-help-text1, Spyfall ist ein Spiel, bei dem Spieler jeweils eine Rolle und einen allgemeinen Standort zugewiesen werden. Ein Spieler ist zufällig ausgewählt und erhält keine Informationen. Dieser Spieler ist der Spion. Das Ziel des Spions ist es, den Ort zu finden, in dem das Spiel gerade stattfindet. Zu keinem Zeitpunkt sind normale Spieler erlaubt, ihre Rolle oder den Standort zu verraten.
+window-help-text2, Spieler stellen abwechselnd anderen Spielern Fragen und versuchen in einer begrenzten Zeit herauszufinden, wer der Spion ist. Die Spieler können mit einer Mehrheit bestimmen, welcher Spieler der der Spion ist. Wenn der gegebene Spieler der Spion ist, verliert der Spion. Wenn er kein Spion ist, gewinnt der echte Spion. Der Spion kann auch das Spiel an einem beliebigen Punkt gewinnen, indem er die Runde unterbricht und versucht, den Standort der Runde zu bestimmen.
+window-help-source, Quellcode-Repository auf GitHub verfügbar
 
 window-reveal-role, Deine Rolle ist
 window-reveal-spy, Du bist der Spion!
 window-reveal-hidden, Der Standort ist für dich verborgen.
 window-reveal-show, Gedrückt halten um informationen zu zeigen
 window-reveal-close, Diese Spieler Karte schließen
-window-reveal-ready, Klicken um das Spiel zu starten
+
+window-ready-title, Bereit
+window-ready-close, Spiel zu beginnen
+
+window-resolution-title, Auflösung
+window-resolution-header, Spiel Auflösung
+window-resolution-close, Klicken, um das Fenster zu schließen

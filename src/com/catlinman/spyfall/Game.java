@@ -375,9 +375,7 @@ public class Game {
 
             // If we're at the latest player we check if a spy has been picked. If not, assign this player as the spy.
             if (i == this.numPlayers - 1 && this.getSpyPlayer() == null)
-                // Evaluate the player array to see if the spy role has been assigned. Else assign it to the last player.
-                if (this.players[this.numPlayers - 1].getRole() == null)
-                    this.setSpyPlayer(this.players[this.numPlayers - 1]);
+                this.setSpyPlayer(this.players[this.numPlayers - 1]);
         }
     } /* setRoles */
 

@@ -1,3 +1,4 @@
+
 # Spyfall #
 
 This repository contains a version of the game that has been adapted for use on

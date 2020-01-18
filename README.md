@@ -21,20 +21,40 @@ everyone else wins. If the selection is not the spy, the real spy wins the game.
 The spy can also win the game at any point by calling a timeout and attempting
 to state the location that the game is taking place in.
 
+## Requirements ##
+
+This project depends on JavaFX which these days is not shipped with the JDK
+anymore. Due to this, you will have to manually install it as a dependency
+from the currently maintained repository. Additionally, there are builds
+available for various platforms from the [project website](https://openjfx.io/).
+
+Once you have downloaded the current JavaFX SDK, place it in an easily accessible
+library directory.
+
+For setup with an IDE read one of the project guides or general assistance and
+further reference please refer to the
+[JavaFX installation guide](https://openjfx.io/openjfx-docs/).
+
 ## Setup ##
 
 To build the application run the following command in the *src* directory.
 
-	$ javac com/catlinman/spyfall/Program.java
+    $ javac com/catlinman/spyfall/Program.java
+
+If you are running solely from the command line, you will have to append arguments
+to include your JavaFX library. To keep things short on the prompt,we load all
+available modules.
+
+    $ javac --module-path [../JavaFX/lib] --add-modules=ALL-MODULE-PATH
 
 Following up, to run the program from the command line.
 
-	$ java -cp .:../res com.catlinman.spyfall.Program
+    $ java -cp .:../res com.catlinman.spyfall.Program
 
 You can also build a jar file and package up the program which is recommended in
 most cases. Don't forget to run ```javac``` beforehand.
 
-	$ jar cfm Spyfall.jar manifest.mf com/catlinman/spyfall/*.class
+    $ jar cfm Spyfall.jar manifest.mf com/catlinman/spyfall/*.class
 
 From there on you can run the application using *```java -jar Spyfall.jar```*.
 

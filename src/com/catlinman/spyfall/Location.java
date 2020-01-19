@@ -1,5 +1,7 @@
 package com.catlinman.spyfall;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -80,14 +82,25 @@ class Location {
         // Get the currently set language key.
         String lang = Locale.getCurrent();
 
-        // Fetch the resource location from the localized input file.
-        String datapath = Location.class.getClassLoader().getResource(lang + "_" + DATAFILENAME).getPath();
+        // Reserve variables for our handling of the locale file location.
+        URI dataURI; String dataPath;
+
+        // Fetch the resource location from the localized input file. We originally receive a URL which we convert to a URI.
+        try {
+            dataURI = Program.class.getClassLoader().getResource(String.format("%s_%s", lang, DATAFILENAME)).toURI();
+            dataPath = Paths.get(dataURI).toString();
+
+        } catch(URISyntaxException e) {
+            System.out.println(e);
+
+            return;
+        }
 
         String content = ""; // Used as temporary storage for the input data.
 
         // Read the file contents with the right system encoding and combine it to a single string.
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get(datapath));
+            byte[] encoded = Files.readAllBytes(Paths.get(dataPath));
             content = new String(encoded, Charset.defaultCharset());
 
         } catch (IOException e) {}
@@ -132,5 +145,4 @@ class Location {
     static String[] getLocations() {
         return locations;
     }
-
 }

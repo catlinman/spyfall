@@ -1,12 +1,13 @@
 package com.catlinman.spyfall;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 
 // Static language management class.
 public class Locale {
@@ -53,14 +54,25 @@ public class Locale {
 
         if (Debug.DATA) System.out.println("Data: Loading locale data file for the language key of " + l + ".");
 
-        // Fetch the resource location from the localized input file.
-        String localepath = Program.class.getClassLoader().getResource(l + "_" + LOCALEFILENAME).getPath();
+        // Reserve variables for our handling of the locale file location.
+        URI localeURI; String localePath;
+
+        // Fetch the resource location from the localized input file. We originally receive a URL which we convert to a URI.
+        try {
+            localeURI = Program.class.getClassLoader().getResource(String.format("%s_%s", l, LOCALEFILENAME)).toURI();
+            localePath = Paths.get(localeURI).toString();
+
+        } catch(URISyntaxException e) {
+            System.out.println(e);
+
+            return;
+        }
 
         String content = ""; // Used as temporary storage for the input data.
 
         // Read the file contents with the right system encoding and combine it to a single string.
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get(localepath));
+            byte[] encoded = Files.readAllBytes(Paths.get(localePath));
             content = new String(encoded, Charset.defaultCharset());
         } catch (IOException e) {}
 
@@ -83,8 +95,9 @@ public class Locale {
 
             } catch (IndexOutOfBoundsException e) {
                 if (Debug.DATA) System.out.println(
-                        "Data: Error in " + l.toUpperCase() + " UI CSV line " + i
-                        + " does not contain the right amount of fields (expected two fields).");
+                    "Data: Error in " + l.toUpperCase() + " UI CSV line " + i
+                    + " does not contain the right amount of fields (expected two fields)."
+                );
             }
         }
 

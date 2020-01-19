@@ -401,7 +401,7 @@ public class Program extends Application {
             final Text playerText = new Text(250, 250, Locale.get("general-player") + " " + (i + 1) + ": " + players[i].getRole());
             resolutionBox.getChildren().add(playerText);
 
-            resolutionStage.setHeight(160 + 28 + (28 * i));
+            resolutionStage.setHeight(160 + 52 + (26 * i));
         }
 
         // Add the second separator and close button.
@@ -517,6 +517,7 @@ public class Program extends Application {
 
         final GridPane playerGrid = new GridPane();
 
+        playerGrid.setMaxWidth(784);
         playerGrid.setPadding(new Insets(10, 10, 10, 10));
         playerGrid.setVgap(10);
         playerGrid.setHgap(10);
@@ -531,10 +532,9 @@ public class Program extends Application {
             // Create the player text string from Locale.
             String playertext = Locale.get("general-player") + " " + (i + 1);
 
-            // Set the correct player id.
+            // Set the correct player id placeholder and width of the textbox.
             tf.setPromptText(playertext);
-
-            tf.setPrefColumnCount(14);
+            tf.setPrefWidth(188);
 
             if (i > 3) {
                 tf.setText("");

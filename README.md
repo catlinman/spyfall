@@ -51,6 +51,10 @@ Following up, to run the program from the command line.
 
     $ java -cp .:../res com.catlinman.spyfall.Program
 
+Keep in mind on Windows you will have to use `;` as your classpath separator.
+
+    $ java -cp ".;../res" com.catlinman.spyfall.Program
+
 You can also build a jar file and package up the program which is recommended in
 most cases. Don't forget to run ```javac``` beforehand.
 
